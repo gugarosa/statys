@@ -1,6 +1,6 @@
 from statys.core import Distribution
 import statys.tests.measure as m
-import statys.tests.wilcoxon as w
+import statys.tests.non_parametric as n
 import numpy as np
 
 x = np.arange(20) + np.arange(1,21)/100.0
@@ -12,7 +12,7 @@ print(x, y)
 
 a = Distribution(x, y)
 
-print(m.mean(a), m.std(a))
+# print(m.mean(a), m.std(a))
 
-# print(w.wilcoxon_signed_rank(a))
-# print(w.wilcoxon_rank_sum(a))
+print(n.wilcoxon_signed_rank(a))
+print(n.wilcoxon_rank_sum(a))

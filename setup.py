@@ -14,6 +14,7 @@ setup(name='statys',
       license='GPL-3.0',
       install_requires=['coverage>=5.3',
                         'matplotlib>=3.3.2',
+                        'numpy>=1.19.2',
                         'pylint>=2.6.0',
                         'pytest>=6.0.2'
                         ],
