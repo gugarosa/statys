@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def max(analyzer):
+def max(dist):
     """
     """
 
@@ -9,13 +9,13 @@ def max(analyzer):
     output = {}
 
     #
-    for (attr, value) in analyzer.attrs:
+    for (attr, value) in dist.attrs:
         output[attr] = np.max(value)
 
     return output
 
 
-def mean(analyzer):
+def mean(dist):
     """
     """
 
@@ -23,13 +23,13 @@ def mean(analyzer):
     output = {}
 
     #
-    for (attr, value) in analyzer.attrs:
+    for (attr, value) in dist.attrs:
         output[attr] = np.mean(value)
 
     return output
 
 
-def min(analyzer):
+def min(dist):
     """
     """
 
@@ -37,13 +37,13 @@ def min(analyzer):
     output = {}
 
     #
-    for (attr, value) in analyzer.attrs:
+    for (attr, value) in dist.attrs:
         output[attr] = np.min(value)
 
     return output
 
 
-def std(analyzer):
+def std(dist):
     """
     """
 
@@ -51,7 +51,7 @@ def std(analyzer):
     output = {}
 
     #
-    for (attr, value) in analyzer.attrs:
+    for (attr, value) in dist.attrs:
         output[attr] = np.std(value)
 
     return output

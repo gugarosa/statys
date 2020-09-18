@@ -1,4 +1,4 @@
-from statys.core.analyzer import Analyzer
+from statys.core import Distribution
 import statys.tests.standard as s
 import statys.tests.wilcoxon as w
 import numpy as np
@@ -12,7 +12,7 @@ print(x, y)
 
 # print(x, y, z)
 
-a = Analyzer(x, y)
+a = Distribution(x, y)
 
 # print(a, s.min(a), s.std(a))
 
