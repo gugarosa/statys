@@ -170,7 +170,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'statys', 'Statys Documentation',
-     author, 'statys', 'Statys is a library composed of statistical distributions.',
+     author, 'statys', 'Statys is a library composed of statistical analyzers.',
      'Statistical Analysis'),
 ]
 
