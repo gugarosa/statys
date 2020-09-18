@@ -1,5 +1,5 @@
 from statys.core import Distribution
-import statys.tests.standard as s
+import statys.tests.measure as m
 import statys.tests.wilcoxon as w
 import numpy as np
 
@@ -10,11 +10,9 @@ y[15:] += 1
 
 print(x, y)
 
-# print(x, y, z)
-
 a = Distribution(x, y)
 
-# print(a, s.min(a), s.std(a))
+print(m.mean(a), m.std(a))
 
-print(w.wilcoxon_signed_rank(a))
-print(w.wilcoxon_rank_sum(a))
+# print(w.wilcoxon_signed_rank(a))
+# print(w.wilcoxon_rank_sum(a))
