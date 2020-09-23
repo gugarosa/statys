@@ -4,6 +4,7 @@
 import numpy as np
 
 import statys.utils.logging as l
+import statys.utils.wrappers as w
 
 logger = l.get_logger(__name__)
 
@@ -21,13 +22,8 @@ def max(dist):
 
     logger.debug('Finding maximum value ...')
 
-    # Initializes a empty dictionary for the outputs
-    output = {}
-
-    # Iterates through every attribute in the distribution
-    for (attr, value) in dist.attrs:
-        # Calculates maximum value
-        output[attr] = np.max(value)
+    # Calculates the maximum value of a distribution
+    output = w.measure_pipeline(np.max, dist)
 
     logger.debug('Maximum value found.')
 
@@ -47,13 +43,8 @@ def mean(dist):
 
     logger.debug('Calculating mean ...')
 
-    # Initializes a empty dictionary for the outputs
-    output = {}
-
-    # Iterates through every attribute in the distribution
-    for (attr, value) in dist.attrs:
-        # Calculates mean
-        output[attr] = np.mean(value)
+    # Calculates the mean value of a distribution
+    output = w.measure_pipeline(np.mean, dist)
 
     logger.debug('Mean calculated.')
 
@@ -73,13 +64,8 @@ def min(dist):
 
     logger.debug('Finding minimum value ...')
 
-    # Initializes a empty dictionary for the outputs
-    output = {}
-
-    # Iterates through every attribute in the distribution
-    for (attr, value) in dist.attrs:
-        # Calculates minimum value
-        output[attr] = np.min(value)
+    # Calculates the minimum value of a distribution
+    output = w.measure_pipeline(np.max, dist)
 
     logger.debug('Minimum value found.')
 
@@ -99,13 +85,8 @@ def std(dist):
 
     logger.debug('Calculating standard deviation ...')
 
-    # Initializes a empty dictionary for the outputs
-    output = {}
-
-    # Iterates through every attribute in the distribution
-    for (attr, value) in dist.attrs:
-        # Calculates standard deviation
-        output[attr] = np.std(value)
+    # Calculates the standard deviation of a distribution
+    output = w.measure_pipeline(np.std, dist)
 
     logger.debug('Standard deviation calculated.')
 
