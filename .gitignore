@@ -1,3 +1,14 @@
+# Mac OS Files
+**/*.DS_Store
+.vscode/
+.idea/
+
+# Ubuntu's editor temp files
+**/*.*~
+
+# Logs
+statys.log.*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
