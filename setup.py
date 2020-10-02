@@ -16,7 +16,7 @@ setup(name='statys',
                         'matplotlib>=3.3.2',
                         'numpy>=1.19.2',
                         'pylint>=2.6.0',
-                        'pytest>=6.0.2'
+                        'pytest>=6.1.0'
                         ],
       extras_require={
           'tests': ['coverage',
