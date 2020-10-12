@@ -2,11 +2,34 @@
 """
 
 import numpy as np
+import scipy.stats as st
 
 import statys.utils.logging as l
 import statys.utils.wrappers as w
 
 logger = l.get_logger(__name__)
+
+
+def kurtosis(dist):
+    """Measures the kurtosis of a distribution.
+
+    Args:
+        dist (Distribution): Distribution to be analyzed.
+
+    Returns:
+        Dictionary holding the measure's outputs.
+
+    """
+
+    logger.info('Calculating kurtosis ...')
+
+    # Calculates the kurtosis value of a distribution
+    output = w.measure_pipeline(st.kurtosis, dist)
+
+    logger.info('Kurtosis calculated.')
+    logger.debug(output)
+
+    return output
 
 
 def max(dist):
@@ -53,6 +76,28 @@ def mean(dist):
     return output
 
 
+def median(dist):
+    """Measures the median of a distribution.
+
+    Args:
+        dist (Distribution): Distribution to be analyzed.
+
+    Returns:
+        Dictionary holding the measure's outputs.
+
+    """
+
+    logger.info('Calculating median ...')
+
+    # Calculates the median value of a distribution
+    output = w.measure_pipeline(np.median, dist)
+
+    logger.info('Median calculated.')
+    logger.debug(output)
+
+    return output
+
+
 def min(dist):
     """Measures the minimum value of a distribution.
 
@@ -75,6 +120,28 @@ def min(dist):
     return output
 
 
+def skewness(dist):
+    """Measures the skewness of a distribution.
+
+    Args:
+        dist (Distribution): Distribution to be analyzed.
+
+    Returns:
+        Dictionary holding the measure's outputs.
+
+    """
+
+    logger.info('Calculating skewness ...')
+
+    # Calculates the skewness value of a distribution
+    output = w.measure_pipeline(st.skew, dist)
+
+    logger.info('Skewness calculated.')
+    logger.debug(output)
+
+    return output
+
+
 def std(dist):
     """Measures the standard deviation of a distribution.
 
@@ -92,6 +159,28 @@ def std(dist):
     output = w.measure_pipeline(np.std, dist)
 
     logger.info('Standard deviation calculated.')
+    logger.debug(output)
+
+    return output
+
+
+def var(dist):
+    """Measures the variance of a distribution.
+
+    Args:
+        dist (Distribution): Distribution to be analyzed.
+
+    Returns:
+        Dictionary holding the measure's outputs.
+
+    """
+
+    logger.info('Calculating variance ...')
+
+    # Calculates the variance of a distribution
+    output = w.measure_pipeline(np.var, dist)
+
+    logger.info('Variance calculated.')
     logger.debug(output)
 
     return output

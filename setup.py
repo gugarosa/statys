@@ -17,6 +17,7 @@ setup(name='statys',
                         'numpy>=1.19.2',
                         'pylint>=2.6.0',
                         'pytest>=6.1.0'
+                        'scikit-learn>=0.22.2'
                         ],
       extras_require={
           'tests': ['coverage',
