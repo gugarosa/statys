@@ -21,11 +21,12 @@ def u_test(dist, alpha=0.05):
 
     """
 
-    logger.debug('Performing Mann-Whitney U test ...')
+    logger.info('Performing Mann-Whitney U test ...')
 
     # Performs the Mann-Whitney test
     output = w.statistical_pipeline(s.mannwhitneyu, dist, alpha)
 
-    logger.debug('Test performed.')
+    logger.info('Test performed.')
+    logger.debug(output)
 
     return output

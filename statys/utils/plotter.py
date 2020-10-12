@@ -109,7 +109,7 @@ def plot_p_value(p_dict, color_map='YlGn', labels=None, title=None):
     # Iterates through the p-valued matrix
     for (i, j), z in np.ndenumerate(p):
         # Applies the corresponding value to the position
-        ax.text(j, i, '{:0.2f}'.format(1 - z), ha='center', va='center')
+        ax.text(j, i, '{:0.3f}'.format(1 - z), ha='center', va='center')
 
     # Adds the significances to the plot
     ax.imshow(p, cmap=color_map)

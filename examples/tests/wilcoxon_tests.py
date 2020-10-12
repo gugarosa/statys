@@ -9,5 +9,5 @@ y = [0.07, 0.14, 0.72, 0.32, 0.59, 0.43]
 d = Distribution(x, y)
 
 # Calculating Wilcoxon-based tests
-print(w.signed_rank(d))
-print(w.rank_sum(d))
+w.signed_rank(d)
+w.rank_sum(d)

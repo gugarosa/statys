@@ -20,12 +20,13 @@ def max(dist):
 
     """
 
-    logger.debug('Finding maximum value ...')
+    logger.info('Finding maximum value ...')
 
     # Calculates the maximum value of a distribution
     output = w.measure_pipeline(np.max, dist)
 
-    logger.debug('Maximum value found.')
+    logger.info('Maximum value found.')
+    logger.debug(output)
 
     return output
 
@@ -41,12 +42,13 @@ def mean(dist):
 
     """
 
-    logger.debug('Calculating mean ...')
+    logger.info('Calculating mean ...')
 
     # Calculates the mean value of a distribution
     output = w.measure_pipeline(np.mean, dist)
 
-    logger.debug('Mean calculated.')
+    logger.info('Mean calculated.')
+    logger.debug(output)
 
     return output
 
@@ -62,12 +64,13 @@ def min(dist):
 
     """
 
-    logger.debug('Finding minimum value ...')
+    logger.info('Finding minimum value ...')
 
     # Calculates the minimum value of a distribution
     output = w.measure_pipeline(np.max, dist)
 
-    logger.debug('Minimum value found.')
+    logger.info('Minimum value found.')
+    logger.debug(output)
 
     return output
 
@@ -83,11 +86,12 @@ def std(dist):
 
     """
 
-    logger.debug('Calculating standard deviation ...')
+    logger.info('Calculating standard deviation ...')
 
     # Calculates the standard deviation of a distribution
     output = w.measure_pipeline(np.std, dist)
 
-    logger.debug('Standard deviation calculated.')
+    logger.info('Standard deviation calculated.')
+    logger.debug(output)
 
     return output
