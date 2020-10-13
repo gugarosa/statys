@@ -120,6 +120,28 @@ def min(dist, **kwargs):
     return output
 
 
+def rank(dist, **kwargs):
+    """Ranks the values of a distribution.
+
+    Args:
+        dist (Distribution): Distribution to be analyzed.
+
+    Returns:
+        Dictionary holding the measure's outputs.
+
+    """
+
+    logger.info('Ranking distribution ...')
+
+    # Calculates the minimum value of a distribution
+    output = w.measure_pipeline(st.rankdata, dist, **kwargs)
+
+    logger.info('Distribution ranked.')
+    logger.debug(output)
+
+    return output
+
+
 def skewness(dist, **kwargs):
     """Measures the skewness of a distribution.
 
