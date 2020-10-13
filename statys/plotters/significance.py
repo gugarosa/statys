@@ -1,4 +1,4 @@
-"""Plot-based functionalities to visualize the statistical tests.
+"""Significance-based plotting utilities, such as h-index and p-value.
 """
 
 import matplotlib.pyplot as plt
@@ -75,42 +75,6 @@ def _prepare_plot(n_args, labels, title):
     return ax
 
 
-def _rank_position(index, low, high, spacing, scale):
-    """
-    """
-
-    #
-    x = high - index
-
-    return spacing + scale / (high - low) * x
-
-
-def plot_critical_difference(cd_dict, width=6, spacing=2):
-    """
-    """
-    
-    #
-    scale = width - 2 * spacing
-    
-    # Iterates through every dictionary item
-    for k, v in cd_dict.items():
-        #
-        low, high = 1, v[0].shape[0]
-
-        #
-        cd = v[1]
-
-        #
-        start_pos = _rank_position(high, low, high, spacing, scale)
-
-        #
-        end_pos = _rank_position(high - cd, low, high, spacing, scale)
-
-        print(start_pos, end_pos, low, high, cd)
-
-
-
-
 def plot_p_value(p_dict, color_map='YlGn', labels=None, title=None):
     """Plots a p-value grid according to statistical results.
 
@@ -154,11 +118,11 @@ def plot_p_value(p_dict, color_map='YlGn', labels=None, title=None):
     plt.show()
 
 
-def plot_significance_index(sig_dict, color_map='YlGn', labels=None, title=None):
-    """Plots a significance index grid according to statistical results.
+def plot_h_index(h_dict, color_map='YlGn', labels=None, title=None):
+    """Plots an h-index grid according to statistical results.
 
     Args:
-        sig_dict (dict): Dictionary of significances and p-values.
+        h_dict (dict): Dictionary of h-indexes and p-values.
         color_map (str): A color map from matplotlib.
         labels (list): List of stringed labels.
         title (str): Title to be displayed.
@@ -166,7 +130,7 @@ def plot_significance_index(sig_dict, color_map='YlGn', labels=None, title=None)
     """
 
     # Calculates the number of arguments by solving: y = x^2 - x
-    n_args = int(np.roots([1, -1, -len(sig_dict)])[0])
+    n_args = int(np.roots([1, -1, -len(h_dict)])[0])
 
     # Prepares the plot using common-based definitions
     ax = _prepare_plot(n_args, labels, title)
@@ -175,7 +139,7 @@ def plot_significance_index(sig_dict, color_map='YlGn', labels=None, title=None)
     sigs = np.zeros((n_args, n_args), dtype='int')
 
     # Iterates through every dictionary item
-    for k, v in sig_dict.items():
+    for k, v in h_dict.items():
         # Gathers the positions from the arguments
         args = k.replace('arg', '').split('-')
 

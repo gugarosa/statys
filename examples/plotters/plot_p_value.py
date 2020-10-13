@@ -1,5 +1,5 @@
+import statys.plotters.significance as s
 import statys.tests.wilcoxon as w
-import statys.utils.plotter as p
 from statys.core import Distribution
 
 # Defining input arguments
@@ -14,4 +14,4 @@ d = Distribution(x, y, z)
 signed_rank = w.signed_rank(d)
 
 # Plots the p-values
-p.plot_p_value(signed_rank, title='Wilcoxon Signed-Rank Test ($p$-values)')
+s.plot_p_value(signed_rank, title='Wilcoxon Signed-Rank Test ($p$-values)')

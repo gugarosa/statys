@@ -8,6 +8,7 @@ Statys is compatible with: **Python 3.6+**.
     :caption: Package Reference
 
     api/statys.core
+    api/statys.plotters
     api/statys.tests
     api/statys.utils
 

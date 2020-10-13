@@ -5,7 +5,6 @@ statys.utils
     statys.utils.constants
     statys.utils.exception
     statys.utils.logging
-    statys.utils.plotter
     statys.utils.wrappers
 
 .. autoapimodule:: statys.utils

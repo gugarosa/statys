@@ -1,5 +1,5 @@
+import statys.plotters.significance as s
 import statys.tests.wilcoxon as w
-import statys.utils.plotter as p
 from statys.core import Distribution
 
 # Defining input arguments
@@ -13,5 +13,5 @@ d = Distribution(x, y, z)
 # Calculating Wilcoxon's signed-rank test
 signed_rank = w.signed_rank(d)
 
-# Plots the significance indexes
-p.plot_significance_index(signed_rank, title='Wilcoxon Signed-Rank Test ($h$-index)')
+# Plots the h-index
+s.plot_h_index(signed_rank, title='Wilcoxon Signed-Rank Test ($h$-index)')

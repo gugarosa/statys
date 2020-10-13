@@ -123,7 +123,9 @@ def friedman_with_posthoc(dist, alpha=0.05, post_hoc='nemenyi', **kwargs):
         cd = q[k - 1] * (k * (k + 1) / (6 * n)) ** 0.5
 
         # Adds the tuple to the output dictionary
-        output[key] = cd
+        output[key] = (val, cd)
 
     logger.info('Test performed.')
     logger.debug(output)
+
+    return output
