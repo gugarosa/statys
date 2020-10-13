@@ -1,4 +1,8 @@
-#
+"""Constants.
+"""
+
+# Defines the critical values used in Friedman's post-hoc analysis
+# Significance values: 0.01, 0.05, 0.1
 CRITICAL_VALUES = {'nemenyi': [[0, 0, 0],
                                [2.575829491, 1.959964233, 1.64485341],
                                [2.913494192, 2.343700476, 2.05229258],
