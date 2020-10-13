@@ -14,4 +14,4 @@ d = Distribution(x, y, z)
 signed_rank = w.signed_rank(d)
 
 # Plots the significance indexes
-p.plot_significance_index(signed_rank, title='Wilcoxon Signed-Rank Test (h-index)')
+p.plot_significance_index(signed_rank, title='Wilcoxon Signed-Rank Test ($h$-index)')
