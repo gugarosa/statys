@@ -1,5 +1,4 @@
-def average_rank(dist):
+def average_rank(dist, axis=None):
     """
     """
 
-    

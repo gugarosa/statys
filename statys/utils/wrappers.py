@@ -27,13 +27,12 @@ def calculate_hypothesis(p, alpha):
     return h
 
 
-def measure_pipeline(measure, dist, axis):
+def measure_pipeline(measure, dist, **kwargs):
     """Wraps the pipeline of conducting a measure.
 
     Args:
         measure (pointer): Pointer to a measure function.
         dist (Distribution): Distribution to be analyzed.
-        axis (int): Axis to conduct the measure.
 
     Returns:
         Dictionary holding the test's outputs.
@@ -46,7 +45,7 @@ def measure_pipeline(measure, dist, axis):
     # Iterates through every attribute in the distribution
     for (attr, value) in dist.attrs:
         # Calculates the measure
-        output[attr] = measure(value, axis)
+        output[attr] = measure(value, **kwargs)
 
     return output
 
