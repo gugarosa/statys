@@ -2,7 +2,7 @@
 """
 
 import numpy as np
-import scipy.stats as st
+import scipy.stats as s
 
 import statys.utils.logging as l
 import statys.utils.wrappers as w
@@ -24,7 +24,7 @@ def kurtosis(dist, **kwargs):
     logger.info('Calculating kurtosis ...')
 
     # Calculates the kurtosis value of a distribution
-    output = w.measure_pipeline(st.kurtosis, dist, **kwargs)
+    output = w.measure_pipeline(s.kurtosis, dist, **kwargs)
 
     logger.info('Kurtosis calculated.')
     logger.debug(output)
@@ -134,7 +134,7 @@ def rank(dist, **kwargs):
     logger.info('Ranking distribution ...')
 
     # Calculates the minimum value of a distribution
-    output = w.measure_pipeline(st.rankdata, dist, **kwargs)
+    output = w.measure_pipeline(s.rankdata, dist, **kwargs)
 
     logger.info('Distribution ranked.')
     logger.debug(output)
@@ -156,7 +156,7 @@ def skewness(dist, **kwargs):
     logger.info('Calculating skewness ...')
 
     # Calculates the skewness value of a distribution
-    output = w.measure_pipeline(st.skew, dist, **kwargs)
+    output = w.measure_pipeline(s.skew, dist, **kwargs)
 
     logger.info('Skewness calculated.')
     logger.debug(output)

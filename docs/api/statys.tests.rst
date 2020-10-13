@@ -2,7 +2,7 @@ statys.tests
 =============
 
 .. toctree::
-    statys.tests.friedman_nemenyi
+    statys.tests.friedman
     statys.tests.mann_whitney
     statys.tests.measure
     statys.tests.wilcoxon
