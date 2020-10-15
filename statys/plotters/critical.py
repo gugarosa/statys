@@ -3,8 +3,7 @@ by https://github.com/biolab/orange3.
 """
 
 
-import matplotlib.pyplot as plt
-import numpy
+import numpy as np
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.figure import Figure
 
@@ -16,7 +15,7 @@ def _create_labels(size=1):
         size (int): Amount of strings to be created.
 
     Returns:
-        A list of stringed labels, e.g., arg0, arg1, ..., argn.
+        A list of stringed labels, e.g., x0, x1, ..., xn.
 
     """
 
@@ -26,7 +25,7 @@ def _create_labels(size=1):
     # Iterates through every possible size
     for i in range(size):
         # Appends the label string
-        labels.append(f'$arg_{i}$')
+        labels.append(f'$x_{i}$')
 
     return labels
 
@@ -105,21 +104,21 @@ def _plot_line(ax, l, width_factor, height_factor, color='k', **kwargs):
     ax.plot(x, y, color=color, **kwargs)
 
 
-# non significance lines
-def _plot_non_line(ax, sort_ranks, low, highlines, side=0.05, height=0.1):
-    start = top_distance + 0.2
-    for l, r in lines:
-        _plot_line(ax, [(_position_rank(sort_ranks[l], low, high, text_spacing, scale, reverse) - side, start),
-                        (_position_rank(sort_ranks[r], low, high, text_spacing, scale, reverse) + side, start)], width_factor, height_factor, linewidth=2.5)
-        start += height
+def _plot_text(ax, x, y, s, width_factor, height_factor, **kwargs):
+    """Plots a text on the desired position.
 
+    Args:
+        ax (Axis): Axis to be plotted.
+        x (int): `x` position to be plotted.
+        y (int): `y` position to be plotted.
+        s (str): String to be plotted.
+        width_factor (float): Width factor.
+        height_factor (float): Height factor.
 
-# def _plot_text(x, y, s, *args, **kwargs):
-#     """
-#     """
+    """
 
-#     #
-#     ax.text(width_factor * x, height_factor * y, s, *args, **kwargs)
+    # Plots the text itself
+    ax.text(width_factor * x, height_factor * y, s, **kwargs)
 
 
 def _get_amount_lines(ranks, cd):
@@ -138,8 +137,7 @@ def _get_amount_lines(ranks, cd):
     n_ranks = len(ranks)
 
     # Transforms them into pairs
-    pairs = [(i, j)
-             for i, j in _multiple_range([[n_ranks], [n_ranks]]) if j > i]
+    pairs = [(i, j) for i, j in _multiple_range([[n_ranks], [n_ranks]]) if j > i]
 
     # Remove non-significant pairs
     non_pairs = [(i, j) for i, j in pairs if abs(ranks[i] - ranks[j]) <= cd]
@@ -307,12 +305,20 @@ def plot_critical_difference(cd_dict, labels=None, width=6, text_spacing=2, reve
         ranks, cd = v[0], v[1]
 
         # Defines a sorting-based operator
-        sort_operator = sorted([(r, i)
-                                for i, r in enumerate(ranks)], reverse=reverse)
+        sort_operator = sorted([(r, i) for i, r in enumerate(ranks)], reverse=reverse)
 
         # Gathers the sorted ranks and their indexes
-        sort_ranks, sort_idx = _get_element(
-            sort_operator, 0), _get_element(sort_operator, 1)
+        sort_ranks, sort_idx = _get_element(sort_operator, 0), _get_element(sort_operator, 1)
+
+        # Checks if labels exists and number of supplied labels equals the number of arguments
+        if labels and len(labels) == len(ranks):
+            # If yes, it is good to go
+            pass
+
+        # If not
+        else:
+            # Re-creates the labels list
+            labels = _create_labels(len(ranks))
 
         # Gathers the sorted labels as well
         sort_labels = [labels[i] for i in sort_idx]
@@ -339,13 +345,9 @@ def plot_critical_difference(cd_dict, labels=None, width=6, text_spacing=2, reve
         big_tick = 0.1
         small_tick = 0.05
 
-        def text(x, y, s, *args, **kwargs):
-            #
-            ax.text(width_factor * x, height_factor * y, s, *args, **kwargs)
-
         # Iterates over every possible value between low and high
         # for plotting the ticks
-        for a in list(numpy.arange(low, high, 0.5)) + [high]:
+        for a in list(np.arange(low, high, 0.5)) + [high]:
             # Gathers the current tick as smallest one
             tick = small_tick
 
@@ -365,8 +367,8 @@ def plot_critical_difference(cd_dict, labels=None, width=6, text_spacing=2, reve
         # for plotting the text
         for a in range(low, high + 1):
             # Plots the text label
-            text(_position_rank(a, low, high, text_spacing, scale, reverse),
-                 top_distance - tick / 2 - 0.05, str(a), ha='center', va='bottom')
+            _plot_text(ax, _position_rank(a, low, high, text_spacing, scale, reverse), top_distance -
+                       tick / 2 - 0.05, str(a), width_factor, height_factor, ha='center', va='bottom')
 
         # Iterates over every possible left-sided rank
         for i in range(int((n_ranks + 1) / 2)):
@@ -382,7 +384,8 @@ def plot_critical_difference(cd_dict, labels=None, width=6, text_spacing=2, reve
             _plot_line(ax, [x, y, z], width_factor, height_factor, linewidth=0.7)
 
             # Plots the text label
-            text(text_spacing - 0.2, arrow, sort_labels[i], ha='right', va='center')
+            _plot_text(ax, text_spacing - 0.2, arrow,
+                       sort_labels[i], width_factor, height_factor, ha='right', va='center')
 
         # Iterates over every possible right-sided rank
         for i in range(int((n_ranks + 1) / 2), n_ranks):
@@ -393,19 +396,20 @@ def plot_critical_difference(cd_dict, labels=None, width=6, text_spacing=2, reve
             x = (_position_rank(sort_ranks[i], low, high, text_spacing, scale, reverse), top_distance)
             y = (_position_rank(sort_ranks[i], low, high, text_spacing, scale, reverse), arrow)
             z = (text_spacing + scale + 0.1, arrow)
-            
+
             # Plots a new line
             _plot_line(ax, [x, y, z], width_factor, height_factor, linewidth=0.7)
 
             # Plots the text label
-            text(text_spacing + scale + 0.2, arrow, sort_labels[i], ha='left', va='center')
+            _plot_text(ax, text_spacing + scale + 0.2, arrow,
+                       sort_labels[i], width_factor, height_factor, ha='left', va='center')
 
         # Checks if it is supposed to use the reverse order
         if reverse:
             # Calculates the starting and ending position from `high` values
             start = _position_rank(high, low, high, text_spacing, scale, reverse)
             end = _position_rank(high - cd, low, high, text_spacing, scale, reverse)
-        
+
         # If not
         else:
             # Calculates the starting and ending position from `low` values
@@ -424,7 +428,8 @@ def plot_critical_difference(cd_dict, labels=None, width=6, text_spacing=2, reve
                         (end, height_distance - big_tick / 2)], width_factor, height_factor, linewidth=0.7)
 
         # Plots the CD line itself
-        text((start + end) / 2, height_distance - 0.05, 'CD=' + str('%.4f' % float(cd)), ha='center', va='bottom')
+        _plot_text(ax, (start + end) / 2, height_distance - 0.05, f'CD={cd}',
+                   width_factor, height_factor, ha='center', va='bottom')
 
         # Plots non-significant lines
         # Defines a new starting point
