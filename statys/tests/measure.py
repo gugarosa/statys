@@ -112,7 +112,7 @@ def min(dist, **kwargs):
     logger.info('Finding minimum value ...')
 
     # Calculates the minimum value of a distribution
-    output = w.measure_pipeline(np.max, dist, **kwargs)
+    output = w.measure_pipeline(np.min, dist, **kwargs)
 
     logger.info('Minimum value found.')
     logger.debug(output)
