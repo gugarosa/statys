@@ -1,5 +1,3 @@
-import numpy as np
-
 from statys.core import Distribution
 from statys.tests import friedman
 

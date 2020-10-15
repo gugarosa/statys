@@ -1,3 +1,7 @@
+# Plotted files
+*.pdf
+*.png
+
 # Mac OS Files
 **/*.DS_Store
 .vscode/
