@@ -42,8 +42,11 @@ def _multiple_range(l):
 
     """
 
+    # Calculates the list's length
+    length = len(l)
+
     # Checks if list does not exists
-    if not len(l):
+    if length == 0:
         # If not, yields an empty tuple
         yield ()
 
@@ -71,7 +74,7 @@ def _line_factoring(line, factor):
     Args:
         line (list): List of lines to be factored.
         factor (float): Factor to use in the factoring.
-    
+
     Returns:
         A list of factored lines.
 
@@ -100,6 +103,15 @@ def _plot_line(ax, l, width_factor, height_factor, color='k', **kwargs):
 
     # Plots the pair of points
     ax.plot(x, y, color=color, **kwargs)
+
+
+# non significance lines
+def _plot_non_line(ax, sort_ranks, low, highlines, side=0.05, height=0.1):
+    start = top_distance + 0.2
+    for l, r in lines:
+        _plot_line(ax, [(_position_rank(sort_ranks[l], low, high, text_spacing, scale, reverse) - side, start),
+                        (_position_rank(sort_ranks[r], low, high, text_spacing, scale, reverse) + side, start)], width_factor, height_factor, linewidth=2.5)
+        start += height
 
 
 # def _plot_text(x, y, s, *args, **kwargs):
@@ -316,69 +328,122 @@ def plot_critical_difference(cd_dict, labels=None, width=6, text_spacing=2, reve
         width_factor = 1 / width
         height_factor = 1 / height
 
+        # Defines `x` and `y` points
+        x = (text_spacing, top_distance)
+        y = (width - text_spacing, top_distance)
+
         # Plots the first line
-        _plot_line(ax, [(text_spacing, top_distance), (width - text_spacing, top_distance)], width_factor, height_factor, linewidth=0.7)
+        _plot_line(ax, [x, y], width_factor, height_factor, linewidth=0.7)
 
         # Defines regular, big and small ticks sizes
         big_tick = 0.1
         small_tick = 0.05
 
         def text(x, y, s, *args, **kwargs):
-        #
+            #
             ax.text(width_factor * x, height_factor * y, s, *args, **kwargs)
-        
+
         # Iterates over every possible value between low and high
+        # for plotting the ticks
         for a in list(numpy.arange(low, high, 0.5)) + [high]:
             # Gathers the current tick as smallest one
             tick = small_tick
 
-            if a == int(a):
+            # Checks if `a` is an integer
+            if isinstance(a, int):
+                # Gathers the current tick as biggest one
                 tick = big_tick
-            _plot_line(ax, [(_position_rank(a, low, high, text_spacing, scale, reverse), top_distance - tick / 2),
-                  (_position_rank(a, low, high, text_spacing, scale, reverse), top_distance)], width_factor, height_factor, linewidth=0.7)
 
+            # Defines `x` and `y` points
+            x = (_position_rank(a, low, high, text_spacing, scale, reverse), top_distance - tick / 2)
+            y = (_position_rank(a, low, high, text_spacing, scale, reverse), top_distance)
+
+            # Plots a new line
+            _plot_line(ax, [x, y], width_factor, height_factor, linewidth=0.7)
+
+        # Iterates over every possible value between low and high
+        # for plotting the text
         for a in range(low, high + 1):
+            # Plots the text label
             text(_position_rank(a, low, high, text_spacing, scale, reverse),
-                 top_distance - tick / 2 - 0.05, str(a), ha="center", va="bottom")
+                 top_distance - tick / 2 - 0.05, str(a), ha='center', va='bottom')
 
+        # Iterates over every possible left-sided rank
         for i in range(int((n_ranks + 1) / 2)):
-            chei = top_distance + not_sig_distance + i * 0.2
-            _plot_line(ax, [(_position_rank(sort_ranks[i], low, high, text_spacing, scale, reverse), top_distance), (_position_rank(
-                sort_ranks[i], low, high, text_spacing, scale, reverse), chei), (text_spacing - 0.1, chei)], width_factor, height_factor, linewidth=0.7)
-            text(text_spacing - 0.2, chei,
-                 sort_labels[i], ha="right", va="center")
+            # Calculates the "line-arrow"
+            arrow = top_distance + not_sig_distance + i * 0.2
 
+            # Defines `x`, `y` and `z` points
+            x = (_position_rank(sort_ranks[i], low, high, text_spacing, scale, reverse), top_distance)
+            y = (_position_rank(sort_ranks[i], low, high, text_spacing, scale, reverse), arrow)
+            z = (text_spacing - 0.1, arrow)
+
+            # Plots a new line
+            _plot_line(ax, [x, y, z], width_factor, height_factor, linewidth=0.7)
+
+            # Plots the text label
+            text(text_spacing - 0.2, arrow, sort_labels[i], ha='right', va='center')
+
+        # Iterates over every possible right-sided rank
         for i in range(int((n_ranks + 1) / 2), n_ranks):
-            chei = top_distance + not_sig_distance + (n_ranks - i - 1) * 0.2
-            _plot_line(ax, [(_position_rank(sort_ranks[i], low, high, text_spacing, scale, reverse), top_distance), (_position_rank(
-                sort_ranks[i], low, high, text_spacing, scale, reverse), chei), (text_spacing + scale + 0.1, chei)], width_factor, height_factor, linewidth=0.7)
-            text(text_spacing + scale + 0.2, chei,
-                 sort_labels[i], ha="left", va="center")
+            # Calculates the "line-arrow"
+            arrow = top_distance + not_sig_distance + (n_ranks - i - 1) * 0.2
 
-        # begin, end = _position_rank(high, low, high, text_spacing, scale), _position_rank(
-            # high - cd, low, high, text_spacing, scale)
-        begin, end = _position_rank(low, low, high, text_spacing, scale, reverse), _position_rank(
-            low + cd, low, high, text_spacing, scale, reverse)
+            # Defines `x`, `y` and `z` points
+            x = (_position_rank(sort_ranks[i], low, high, text_spacing, scale, reverse), top_distance)
+            y = (_position_rank(sort_ranks[i], low, high, text_spacing, scale, reverse), arrow)
+            z = (text_spacing + scale + 0.1, arrow)
+            
+            # Plots a new line
+            _plot_line(ax, [x, y, z], width_factor, height_factor, linewidth=0.7)
 
-        # print(begin, end, low, high, cd)
+            # Plots the text label
+            text(text_spacing + scale + 0.2, arrow, sort_labels[i], ha='left', va='center')
 
-        _plot_line(ax, [(begin, height_distance), (end, height_distance)], width_factor, height_factor, linewidth=0.7)
-        _plot_line(ax, [(begin, height_distance + big_tick / 2),
-              (begin, height_distance - big_tick / 2)], width_factor, height_factor, linewidth=0.7)
+        # Checks if it is supposed to use the reverse order
+        if reverse:
+            # Calculates the starting and ending position from `high` values
+            start = _position_rank(high, low, high, text_spacing, scale, reverse)
+            end = _position_rank(high - cd, low, high, text_spacing, scale, reverse)
+        
+        # If not
+        else:
+            # Calculates the starting and ending position from `low` values
+            start = _position_rank(low, low, high, text_spacing, scale, reverse)
+            end = _position_rank(low + cd, low, high, text_spacing, scale, reverse)
+
+        # Plots the starting and ending points of the CD line
+        _plot_line(ax, [(start, height_distance), (end, height_distance)], width_factor, height_factor, linewidth=0.7)
+
+        # Plots the starting ticks of the CD line
+        _plot_line(ax, [(start, height_distance + big_tick / 2),
+                        (start, height_distance - big_tick / 2)], width_factor, height_factor, linewidth=0.7)
+
+        # Plots the ending ticks of the CD line
         _plot_line(ax, [(end, height_distance + big_tick / 2),
-              (end, height_distance - big_tick / 2)], width_factor, height_factor, linewidth=0.7)
-        text((begin + end) / 2, height_distance - 0.05, "CD=" +
-             str('%.4f' % float(cd)), ha="center", va="bottom")
+                        (end, height_distance - big_tick / 2)], width_factor, height_factor, linewidth=0.7)
 
-        # non significance lines
-        def draw_lines(lines, side=0.05, height=0.1):
-            start = top_distance + 0.2
-            for l, r in lines:
-                _plot_line(ax, [(_position_rank(sort_ranks[l], low, high, text_spacing, scale, reverse) - side, start),
-                      (_position_rank(sort_ranks[r], low, high, text_spacing, scale, reverse) + side, start)], width_factor, height_factor, linewidth=2.5)
-                start += height
+        # Plots the CD line itself
+        text((start + end) / 2, height_distance - 0.05, 'CD=' + str('%.4f' % float(cd)), ha='center', va='bottom')
 
-        draw_lines(n_lines)
+        # Plots non-significant lines
+        # Defines a new starting point
+        start = top_distance + 0.2
 
+        # Iterates over every non-significant line
+        for l, r in n_lines:
+            # Defines `x` and `y` points
+            x = (_position_rank(sort_ranks[l], low, high, text_spacing, scale, reverse) - 0.05, start)
+            y = (_position_rank(sort_ranks[r], low, high, text_spacing, scale, reverse) + 0.05, start)
+
+            # Plots the line
+            _plot_line(ax, [x, y], width_factor, height_factor, linewidth=2.5)
+
+            # Adds height to distinguish between lines
+            start += 0.1
+
+        # Adding a figure to the canvas
         canvas = FigureCanvasAgg(fig)
-        canvas.print_figure(f'file_{key}.pdf')
+
+        # Printing out the figure
+        canvas.print_figure(f'cd_{key}.pdf')

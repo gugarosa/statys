@@ -13,4 +13,4 @@ d = Distribution(x, y)
 friedman_nemenyi = f.friedman_with_posthoc(d)
 
 # Plots the critical differences
-c.plot_critical_difference(friedman_nemenyi, labels=['a', 'b', 'c', 'd', 'e', 'f'])
+c.plot_critical_difference(friedman_nemenyi, labels=['a', 'b', 'c', 'd', 'e', 'f'], reverse=False)
