@@ -1,4 +1,5 @@
-"""Critical difference-based plotting utilities.
+"""Critical difference-based plotting utilities. Note that is an improved version of the script provided
+by https://github.com/biolab/orange3.
 """
 
 
