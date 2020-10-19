@@ -75,7 +75,7 @@ def _prepare_plot(n_args, labels, title):
     return ax
 
 
-def plot_p_value(p_dict, color_map='YlGn', labels=None, title=None):
+def plot_p_value(p_dict, color_map='YlOrRd', labels=None, title=None):
     """Plots a p-value grid according to statistical results.
 
     Args:
@@ -118,7 +118,7 @@ def plot_p_value(p_dict, color_map='YlGn', labels=None, title=None):
     plt.show()
 
 
-def plot_h_index(h_dict, color_map='YlGn', labels=None, title=None):
+def plot_h_index(h_dict, color_map='YlOrRd', labels=None, title=None):
     """Plots an h-index grid according to statistical results.
 
     Args:
