@@ -12,12 +12,12 @@ setup(name='statys',
       author_email='gth.rosa@uol.com.br',
       url='https://github.com/gugarosa/statys',
       license='GPL-3.0',
-      install_requires=['coverage>=5.3',
-                        'matplotlib>=3.3.2',
-                        'numpy>=1.19.2',
-                        'pylint>=2.6.0',
-                        'pytest>=6.1.0'
-                        'scipy>=1.5.2'
+      install_requires=['coverage>=5.5',
+                        'matplotlib>=3.3.4',
+                        'numpy>=1.19.5',
+                        'pylint>=2.7.2',
+                        'pytest>=6.2.2'
+                        'scipy>=1.6.1'
                         ],
       extras_require={
           'tests': ['coverage',
@@ -34,6 +34,7 @@ setup(name='statys',
           'Programming Language :: Python :: 3.6',
           'Programming Language :: Python :: 3.7',
           'Programming Language :: Python :: 3.8',
+          'Programming Language :: Python :: 3.9',
           'Topic :: Software Development :: Libraries',
           'Topic :: Software Development :: Libraries :: Python Modules'
       ],
