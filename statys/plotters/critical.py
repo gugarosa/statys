@@ -94,10 +94,8 @@ def _plot_line(ax, l, width_factor, height_factor, color='k', **kwargs):
 
     """
 
-    # Calculates the `x` element
+    # Calculates the `x` and `y` elements
     x = _line_factoring(_get_element(l, 0), width_factor)
-
-    # Calculates the `y` element
     y = _line_factoring(_get_element(l, 1), height_factor)
 
     # Plots the pair of points
@@ -197,17 +195,13 @@ def _calculate_plot_properties(sort_ranks, cd):
 
     """
 
-    # Gathers the number of possible ranks
+    # Gathers the number of possible ranks and (longest) lines
     n_ranks = len(sort_ranks)
-
-    # Instantiates the height distance as 0.25
-    height_distance = 0.25
-
-    # Calculates the value of the top line
-    top_distance = height_distance + 0.4
-
-    # Gathers the amount of possible (longest) lines
     n_lines = _get_amount_lines(sort_ranks, cd)
+
+    # Instantiates the height distance as 0.25 and calculates top distance
+    height_distance = 0.25
+    top_distance = height_distance + 0.4
 
     # Calculates the value of the blanked lines
     blank_lines = 0.2 + 0.2 + (len(n_lines) - 1) * 0.1
