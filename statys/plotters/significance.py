@@ -22,7 +22,7 @@ def _create_labels(size=1):
     # Iterates through every possible size
     for i in range(size):
         # Appends the label string
-        labels.append(f'$arg_{i}$')
+        labels.append(f'$arg_{{{i}}}$')
 
     return labels
 
@@ -52,6 +52,8 @@ def _prepare_plot(n_args, labels, title):
     else:
         # Re-creates the labels list
         labels = _create_labels(n_args)
+
+    print(labels)
 
     # Defines axis properties
     ax.set_xticks(np.arange(0, n_args, 1))

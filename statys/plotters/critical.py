@@ -25,7 +25,7 @@ def _create_labels(size=1):
     # Iterates through every possible size
     for i in range(size):
         # Appends the label string
-        labels.append(f'$x_{i}$')
+        labels.append(f'$x_{{{i}}}$')
 
     return labels
 
