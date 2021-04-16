@@ -17,7 +17,7 @@ setup(name='statys',
                         'numpy>=1.19.5',
                         'pylint>=2.7.2',
                         'pytest>=6.2.2'
-                        'scipy>=1.6.1'
+                        'scipy>=1.5.4'
                         ],
       extras_require={
           'tests': ['coverage',

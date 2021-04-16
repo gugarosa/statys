@@ -53,8 +53,6 @@ def _prepare_plot(n_args, labels, title):
         # Re-creates the labels list
         labels = _create_labels(n_args)
 
-    print(labels)
-
     # Defines axis properties
     ax.set_xticks(np.arange(0, n_args, 1))
     ax.set_xticklabels(labels)
@@ -89,7 +87,7 @@ def plot_p_value(p_dict, color_map='YlOrRd', labels=None, title=None):
     """
 
     # Calculates the number of arguments by solving: y = x^2 - x
-    n_args = int(np.roots([1, -1, -len(p_dict)])[0])
+    n_args = round(np.roots([1, -1, -len(p_dict)])[0])
 
     # Prepares the plot using common-based definitions
     ax = _prepare_plot(n_args, labels, title)
@@ -132,7 +130,7 @@ def plot_h_index(h_dict, color_map='YlOrRd', labels=None, title=None):
     """
 
     # Calculates the number of arguments by solving: y = x^2 - x
-    n_args = int(np.roots([1, -1, -len(h_dict)])[0])
+    n_args = round(np.roots([1, -1, -len(h_dict)])[0])
 
     # Prepares the plot using common-based definitions
     ax = _prepare_plot(n_args, labels, title)
