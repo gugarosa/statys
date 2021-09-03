@@ -16,12 +16,9 @@ def _create_labels(size=1):
 
     """
 
-    # Creates a list of empty labels
     labels = []
 
-    # Iterates through every possible size
     for i in range(size):
-        # Appends the label string
         labels.append(f'$arg_{{{i}}}$')
 
     return labels
@@ -45,10 +42,8 @@ def _prepare_plot(n_args, labels, title):
 
     # Checks if labels exists and number of supplied labels equals the number of arguments
     if labels and len(labels) == n_args:
-        # If yes, it is good to go
         pass
 
-    # If not
     else:
         # Re-creates the labels list
         labels = _create_labels(n_args)
@@ -95,7 +90,6 @@ def plot_p_value(p_dict, color_map='YlOrRd', labels=None, title=None):
     # Instantiates the p-valued matrix
     p = np.zeros((n_args, n_args))
 
-    # Iterates through every dictionary item
     for k, v in p_dict.items():
         # Gathers the positions from the arguments
         args = k.replace('arg', '').split('-')
@@ -138,7 +132,6 @@ def plot_h_index(h_dict, color_map='YlOrRd', labels=None, title=None):
     # Instantiates the significance matrix
     sigs = np.zeros((n_args, n_args), dtype='int')
 
-    # Iterates through every dictionary item
     for k, v in h_dict.items():
         # Gathers the positions from the arguments
         args = k.replace('arg', '').split('-')

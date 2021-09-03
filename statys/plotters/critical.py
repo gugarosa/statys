@@ -19,12 +19,9 @@ def _create_labels(size=1):
 
     """
 
-    # Creates a list of empty labels
     labels = []
 
-    # Iterates through every possible size
     for i in range(size):
-        # Appends the label string
         labels.append(f'$x_{{{i}}}$')
 
     return labels
@@ -41,29 +38,19 @@ def _multiple_range(l):
 
     """
 
-    # Calculates the list's length
     length = len(l)
 
-    # Checks if list does not exists
     if length == 0:
-        # If not, yields an empty tuple
         yield ()
 
-    # If list exists
     else:
-        # Gathers the first index
         index = l[0]
 
-        # Checks if it is an integer
         if isinstance(index, int):
-            # Transforms it into an indexator
             index = [index]
 
-        # Iterates over the indexes
         for a in range(*index):
-            # Recursively call the function
             for b in _multiple_range(l[1:]):
-                # Yields the corresponding tuple
                 yield tuple([a] + list(b))
 
 
@@ -142,14 +129,11 @@ def _get_amount_lines(ranks, cd):
 
     # Internal function to return the longest pairs
     def get_longest(i, j, pairs):
-        # Iterates over every pair
         for k, l in pairs:
             # Checks if iterated pair is bigger than current one
             if (k <= i and l > j) or (k < i and l >= j):
-                # Return false
                 return False
 
-        # If no false has been returned, return true
         return True
 
     # Keeps the longest pair
@@ -170,12 +154,10 @@ def _get_element(l, n):
 
     """
 
-    # Checks if element's index is negative
     if n < 0:
         # Adds the length of the list to gather the desired index
         i = len(l[0]) + n
 
-    # If element's index is positive
     else:
         # Use the index as usual
         i = n
@@ -262,14 +244,10 @@ def _position_rank(index, low, high, text_spacing, scale, reverse):
 
     """
 
-    # Checks if the plot is reversed
     if reverse:
-        # Calculates `x` with high values
         x = high - index
 
-    # If plot is not reversed
     else:
-        # Calculates `x` with low values
         x = index - low
 
     return text_spacing + scale / (high - low) * x
@@ -290,7 +268,6 @@ def plot_critical_difference(cd_dict, labels=None, width=6, text_spacing=2, reve
     # Defines the plot's scale
     scale = width - 2 * text_spacing
 
-    # Iterates through every dictionary item
     for key, v in cd_dict.items():
         # Gathers the minimum and maximum possible ranks
         low, high = 1, v[0].shape[0]
@@ -306,10 +283,8 @@ def plot_critical_difference(cd_dict, labels=None, width=6, text_spacing=2, reve
 
         # Checks if labels exists and number of supplied labels equals the number of arguments
         if labels and len(labels) == len(ranks):
-            # If yes, it is good to go
             pass
 
-        # If not
         else:
             # Re-creates the labels list
             labels = _create_labels(len(ranks))
@@ -345,7 +320,6 @@ def plot_critical_difference(cd_dict, labels=None, width=6, text_spacing=2, reve
             # Gathers the current tick as smallest one
             tick = small_tick
 
-            # Checks if `a` is an integer
             if isinstance(a, int):
                 # Gathers the current tick as biggest one
                 tick = big_tick
@@ -398,13 +372,11 @@ def plot_critical_difference(cd_dict, labels=None, width=6, text_spacing=2, reve
             _plot_text(ax, text_spacing + scale + 0.2, arrow,
                        sort_labels[i], width_factor, height_factor, ha='left', va='center')
 
-        # Checks if it is supposed to use the reverse order
         if reverse:
             # Calculates the starting and ending position from `high` values
             start = _position_rank(high, low, high, text_spacing, scale, reverse)
             end = _position_rank(high - cd, low, high, text_spacing, scale, reverse)
 
-        # If not
         else:
             # Calculates the starting and ending position from `low` values
             start = _position_rank(low, low, high, text_spacing, scale, reverse)

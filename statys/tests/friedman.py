@@ -29,7 +29,6 @@ def friedman(dist, **kwargs):
     # Computes the average ranks (axis keyword should be used accordingly)
     average_ranks = m.rank(dist, **kwargs)
 
-    # Iterates through every argument
     for key, val in average_ranks.items():
         # Initializes the number of measurements as one
         n = 1
@@ -85,25 +84,18 @@ def friedman_with_posthoc(dist, alpha=0.05, post_hoc='nemenyi', **kwargs):
     # Computes the average ranks (axis keyword should be used accordingly)
     average_ranks = m.rank(dist, **kwargs)
 
-    # Checks if significance is equal to 0.01
     if alpha == 0.01:
-        # Applies the index as `0`
         critical_index = 0
 
-    # If significance is equal to 0.05
     elif alpha == 0.05:
-        # Applies the index as `1`
         critical_index = 1
 
-    # If significance is equal to 0.1
     elif alpha == 0.1:
-        # Applies the index as `2`
         critical_index = 2
 
     # Gathers the corresponding critical values
     q = np.asarray(c.CRITICAL_VALUES[post_hoc])[:, critical_index]
 
-    # Iterates through every argument
     for key, val in average_ranks.items():
         # Initializes the number of measurements as one
         n = 1

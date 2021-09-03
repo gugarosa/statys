@@ -23,7 +23,6 @@ def signed_rank(dist, alpha=0.05):
 
     logger.info('Performing Wilcoxon signed-rank test ...')
 
-    # Performs the Wilcoxon signed-rank test
     output = w.statistical_pipeline(s.wilcoxon, dist, alpha)
 
     logger.info('Test performed.')
@@ -46,7 +45,6 @@ def rank_sum(dist, alpha=0.05):
 
     logger.info('Performing Wilcoxon rank-sum test ...')
 
-    # Performs the Wilcoxon rank-sum test
     output = w.statistical_pipeline(s.ranksums, dist, alpha)
 
     logger.info('Test performed.')

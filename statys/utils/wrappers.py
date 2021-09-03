@@ -14,12 +14,10 @@ def calculate_hypothesis(p, alpha):
 
     """
 
-    # Checks if alpha is bigger than significance
     if p >= alpha:
         # If yes, indicates a failure to reject the null hypothesis
         h = 0
 
-    # If alpha is smaller than significance
     else:
         # Hypothesis should be rejected
         h = 1
@@ -42,7 +40,6 @@ def measure_pipeline(measure, dist, **kwargs):
     # Initializes a empty dictionary for the outputs
     output = {}
 
-    # Iterates through every attribute in the distribution
     for (attr, value) in dist.attrs:
         # Calculates the measure
         output[attr] = measure(value, **kwargs)
@@ -66,16 +63,11 @@ def statistical_pipeline(test, dist, alpha):
     # Initializes a empty dictionary for the outputs
     output = {}
 
-    # Iterates through every attribute in the distribution
     for (attr, value) in dist.attrs:
-        # Re-iterates through every attribute in the distribution
         for (attr2, value2) in dist.attrs:
-            # Checks if `attr` is the same as `attr2`
             if attr == attr2:
-                # Ignores if they are the same
                 pass
 
-            # If they are not the same
             else:
                 # Creates a key to the dictionary
                 key = attr + '-' + attr2

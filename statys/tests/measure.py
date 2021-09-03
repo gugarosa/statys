@@ -23,7 +23,6 @@ def kurtosis(dist, **kwargs):
 
     logger.info('Calculating kurtosis ...')
 
-    # Calculates the kurtosis value of a distribution
     output = w.measure_pipeline(s.kurtosis, dist, **kwargs)
 
     logger.info('Kurtosis calculated.')
@@ -45,7 +44,6 @@ def max(dist, **kwargs):
 
     logger.info('Finding maximum value ...')
 
-    # Calculates the maximum value of a distribution
     output = w.measure_pipeline(np.max, dist, **kwargs)
 
     logger.info('Maximum value found.')
@@ -67,7 +65,6 @@ def mean(dist, **kwargs):
 
     logger.info('Calculating mean ...')
 
-    # Calculates the mean value of a distribution
     output = w.measure_pipeline(np.mean, dist, **kwargs)
 
     logger.info('Mean calculated.')
@@ -89,7 +86,6 @@ def median(dist, **kwargs):
 
     logger.info('Calculating median ...')
 
-    # Calculates the median value of a distribution
     output = w.measure_pipeline(np.median, dist, **kwargs)
 
     logger.info('Median calculated.')
@@ -111,7 +107,6 @@ def min(dist, **kwargs):
 
     logger.info('Finding minimum value ...')
 
-    # Calculates the minimum value of a distribution
     output = w.measure_pipeline(np.min, dist, **kwargs)
 
     logger.info('Minimum value found.')
@@ -133,7 +128,6 @@ def rank(dist, **kwargs):
 
     logger.info('Ranking distribution ...')
 
-    # Calculates the minimum value of a distribution
     output = w.measure_pipeline(s.rankdata, dist, **kwargs)
 
     logger.info('Distribution ranked.')
@@ -155,7 +149,6 @@ def skewness(dist, **kwargs):
 
     logger.info('Calculating skewness ...')
 
-    # Calculates the skewness value of a distribution
     output = w.measure_pipeline(s.skew, dist, **kwargs)
 
     logger.info('Skewness calculated.')
@@ -177,7 +170,6 @@ def std(dist, **kwargs):
 
     logger.info('Calculating standard deviation ...')
 
-    # Calculates the standard deviation of a distribution
     output = w.measure_pipeline(np.std, dist, **kwargs)
 
     logger.info('Standard deviation calculated.')
@@ -199,7 +191,6 @@ def var(dist, **kwargs):
 
     logger.info('Calculating variance ...')
 
-    # Calculates the variance of a distribution
     output = w.measure_pipeline(np.var, dist, **kwargs)
 
     logger.info('Variance calculated.')

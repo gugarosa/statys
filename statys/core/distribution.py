@@ -22,17 +22,12 @@ class Distribution:
 
         logger.info('Initializing class with %d arguments ...', len(args))
 
-        # Iterates through every argument
         for i, arg in enumerate(args):
-            # Defines the argument's name
             attr = f'arg{i}'
 
-            # Checks the argument type
             if not isinstance(arg, (list, np.ndarray)):
-                # Raises an error
                 raise e.TypeError(f'`{attr}` should be a list or np.ndarray')
 
-            # Sets the argument
             setattr(self, attr, arg)
 
         logger.debug('%s', self)
