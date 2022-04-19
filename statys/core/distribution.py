@@ -1,12 +1,14 @@
 """Distribution-related definitions.
 """
 
+from typing import Any, Dict
+
 import numpy as np
 
 import statys.utils.exception as e
-import statys.utils.logging as l
+from statys.utils import logging
 
-logger = l.get_logger(__name__)
+logger = logging.get_logger(__name__)
 
 
 class Distribution:
@@ -15,34 +17,38 @@ class Distribution:
 
     """
 
-    def __init__(self, *args):
-        """Initialization method.
+    def __init__(self, *args) -> None:
+        """Initialization method."""
 
-        """
-
-        logger.info('Initializing class with %d arguments ...', len(args))
+        logger.info("Initializing class with %d arguments ...", len(args))
 
         for i, arg in enumerate(args):
-            attr = f'arg{i}'
+            attr = f"arg{i}"
 
             if not isinstance(arg, (list, np.ndarray)):
-                raise e.TypeError(f'`{attr}` should be a list or np.ndarray')
+                raise e.TypeError(f"`{attr}` should be a list or np.ndarray")
 
             setattr(self, attr, arg)
 
-        logger.debug('%s', self)
-        logger.info('Class initialized.')
+        logger.debug("%s", self)
+        logger.info("Class initialized.")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Class' string representation.
+
+        Returns:
+            (str): String representation.
 
         """
 
         return str(self.__dict__)
 
     @property
-    def attrs(self):
+    def attrs(self) -> Dict[str, Any]:
         """Gathers all attributes from class.
+
+        Returns:
+            (Dict[str, Any]): Attributes encoded into a dictionary.
 
         """
 

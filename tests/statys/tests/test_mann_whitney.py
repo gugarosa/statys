@@ -9,4 +9,7 @@ def test_u_test():
 
     output = mann_whitney.u_test(d)
 
-    assert output['arg0-arg1'] == (0, 0.18923879662233944) or output['arg0-arg1'] == (0, 0.3939393939393939)
+    assert output["arg0-arg1"] == (0, 0.18923879662233944) or output["arg0-arg1"] == (
+        0,
+        0.3939393939393939,
+    )

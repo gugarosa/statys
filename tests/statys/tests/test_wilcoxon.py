@@ -9,7 +9,7 @@ def test_signed_rank():
 
     output = wilcoxon.signed_rank(d)
 
-    assert output['arg0-arg1'] == (0, 0.15625)
+    assert output["arg0-arg1"] == (0, 0.15625)
 
 
 def test_rank_sum():
@@ -19,4 +19,4 @@ def test_rank_sum():
 
     output = wilcoxon.rank_sum(d)
 
-    assert output['arg0-arg1'] == (0, 0.3366683676100388)
+    assert output["arg0-arg1"] == (0, 0.3366683676100388)

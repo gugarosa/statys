@@ -8,7 +8,7 @@ def test_kurtosis():
 
     output = measure.kurtosis(d)
 
-    assert output['arg0'] == -1.268571428571428
+    assert output["arg0"] == -1.268571428571428
 
 
 def test_max():
@@ -17,7 +17,7 @@ def test_max():
 
     output = measure.max(d)
 
-    assert output['arg0'] == 0.5
+    assert output["arg0"] == 0.5
 
 
 def test_mean():
@@ -26,7 +26,7 @@ def test_mean():
 
     output = measure.mean(d)
 
-    assert output['arg0'] == 0.25
+    assert output["arg0"] == 0.25
 
 
 def test_median():
@@ -35,7 +35,7 @@ def test_median():
 
     output = measure.median(d)
 
-    assert output['arg0'] == 0.25
+    assert output["arg0"] == 0.25
 
 
 def test_min():
@@ -44,7 +44,7 @@ def test_min():
 
     output = measure.min(d)
 
-    assert output['arg0'] == 0
+    assert output["arg0"] == 0
 
 
 def test_rank():
@@ -53,7 +53,7 @@ def test_rank():
 
     output = measure.rank(d)
 
-    assert len(output['arg0']) == 6
+    assert len(output["arg0"]) == 6
 
 
 def test_skewness():
@@ -62,7 +62,7 @@ def test_skewness():
 
     output = measure.skewness(d)
 
-    assert output['arg0'] == 5.804286057433026e-17
+    assert output["arg0"] == 5.804286057433026e-17
 
 
 def test_std():
@@ -71,7 +71,7 @@ def test_std():
 
     output = measure.std(d)
 
-    assert output['arg0'] == 0.1707825127659933
+    assert output["arg0"] == 0.1707825127659933
 
 
 def test_var():
@@ -80,4 +80,4 @@ def test_var():
 
     output = measure.var(d)
 
-    assert output['arg0'] == 0.029166666666666664
+    assert output["arg0"] == 0.029166666666666664

@@ -3,10 +3,10 @@
 
 import scipy.stats as s
 
-import statys.utils.logging as l
 import statys.utils.wrappers as w
+from statys.utils import logging
 
-logger = l.get_logger(__name__)
+logger = logging.get_logger(__name__)
 
 
 def signed_rank(dist, alpha=0.05):
@@ -21,11 +21,11 @@ def signed_rank(dist, alpha=0.05):
 
     """
 
-    logger.info('Performing Wilcoxon signed-rank test ...')
+    logger.info("Performing Wilcoxon signed-rank test ...")
 
     output = w.statistical_pipeline(s.wilcoxon, dist, alpha)
 
-    logger.info('Test performed.')
+    logger.info("Test performed.")
     logger.debug(output)
 
     return output
@@ -43,11 +43,11 @@ def rank_sum(dist, alpha=0.05):
 
     """
 
-    logger.info('Performing Wilcoxon rank-sum test ...')
+    logger.info("Performing Wilcoxon rank-sum test ...")
 
     output = w.statistical_pipeline(s.ranksums, dist, alpha)
 
-    logger.info('Test performed.')
+    logger.info("Test performed.")
     logger.debug(output)
 
     return output

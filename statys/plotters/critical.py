@@ -3,102 +3,120 @@ by https://github.com/biolab/orange3.
 """
 
 
+from typing import Any, Dict, List, Optional, Tuple
+
 import numpy as np
+from matplotlib.axis import Axis
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.figure import Figure
 
 
-def _create_labels(size=1):
+def _create_labels(size: Optional[int] = 1) -> List[str]:
     """Creates a list of labels strings.
 
     Args:
-        size (int): Amount of strings to be created.
+        size: Amount of strings to be created.
 
     Returns:
-        A list of stringed labels, e.g., x0, x1, ..., xn.
+        (List[str]): Stringed labels, e.g., x0, x1, ..., xn.
 
     """
 
     labels = []
 
     for i in range(size):
-        labels.append(f'$x_{{{i}}}$')
+        labels.append(f"$x_{{{i}}}$")
 
     return labels
 
 
-def _multiple_range(l):
+def _multiple_range(input_list: List[Any]) -> Tuple[Any, ...]:
     """Performs a multiple range, used to traverse matrices.
 
     Args:
-        l (List): List to be traversed.
+        input_list: List to be traversed.
 
     Yields:
-        An iterator of tuples.
+        (Tuple[Any, ...]): Iterator of tuples.
 
     """
 
-    length = len(l)
+    length = len(input_list)
 
     if length == 0:
         yield ()
 
     else:
-        index = l[0]
+        index = input_list[0]
 
         if isinstance(index, int):
             index = [index]
 
         for a in range(*index):
-            for b in _multiple_range(l[1:]):
+            for b in _multiple_range(input_list[1:]):
                 yield tuple([a] + list(b))
 
 
-def _line_factoring(line, factor):
+def _line_factoring(line: List[float], factor: float) -> List[float]:
     """Factors a line's positioning.
 
     Args:
-        line (list): List of lines to be factored.
-        factor (float): Factor to use in the factoring.
+        line: Lines to be factored.
+        factor: Factor to use in the factoring.
 
     Returns:
-        A list of factored lines.
+        (List[float]): Factored lines.
 
     """
 
     return [a * factor for a in line]
 
 
-def _plot_line(ax, l, width_factor, height_factor, color='k', **kwargs):
+def _plot_line(
+    ax: Axis,
+    input_list: List[Tuple[int, int]],
+    width_factor: float,
+    height_factor: float,
+    color: Optional[str] = "k",
+    **kwargs,
+) -> None:
     """Plots pairs of points as lines.
 
     Args:
-        ax (Axis): Axis to be plotted.
-        l (list): List of pairs of points.
-        width_factor (float): Width factor.
-        height_factor (float): Height factor.
-        color (str): Color to be plotted.
+        ax: Axis to be plotted.
+        input_list: List of pairs of points.
+        width_factor: Width factor.
+        height_factor: Height factor.
+        color: Color to be plotted.
 
     """
 
     # Calculates the `x` and `y` elements
-    x = _line_factoring(_get_element(l, 0), width_factor)
-    y = _line_factoring(_get_element(l, 1), height_factor)
+    x = _line_factoring(_get_element(input_list, 0), width_factor)
+    y = _line_factoring(_get_element(input_list, 1), height_factor)
 
     # Plots the pair of points
     ax.plot(x, y, color=color, **kwargs)
 
 
-def _plot_text(ax, x, y, s, width_factor, height_factor, **kwargs):
+def _plot_text(
+    ax: Axis,
+    x: int,
+    y: int,
+    s: str,
+    width_factor: float,
+    height_factor: float,
+    **kwargs,
+) -> None:
     """Plots a text on the desired position.
 
     Args:
-        ax (Axis): Axis to be plotted.
-        x (int): `x` position to be plotted.
-        y (int): `y` position to be plotted.
-        s (str): String to be plotted.
-        width_factor (float): Width factor.
-        height_factor (float): Height factor.
+        ax: Axis to be plotted.
+        x: `x` position to be plotted.
+        y: `y` position to be plotted.
+        s: String to be plotted.
+        width_factor: Width factor.
+        height_factor: Height factor.
 
     """
 
@@ -106,15 +124,15 @@ def _plot_text(ax, x, y, s, width_factor, height_factor, **kwargs):
     ax.text(width_factor * x, height_factor * y, s, **kwargs)
 
 
-def _get_amount_lines(ranks, cd):
+def _get_amount_lines(ranks: List[int], cd: float) -> List[Tuple[Any, ...]]:
     """Gets the amount of possible lines to create the plot.
 
     Args:
-        ranks (list): List of ranks.
-        cd (float): Critical difference.
+        ranks: List of ranks.
+        cd: Critical difference.
 
     Returns:
-        List of tuples containing the longest possible amount of lines.
+        (List[Tuple[Any, ...]]): Longest possible amount of lines.
 
     """
 
@@ -128,7 +146,7 @@ def _get_amount_lines(ranks, cd):
     non_pairs = [(i, j) for i, j in pairs if abs(ranks[i] - ranks[j]) <= cd]
 
     # Internal function to return the longest pairs
-    def get_longest(i, j, pairs):
+    def get_longest(i: int, j: int, pairs: Tuple[int, int]) -> bool:
         for k, l in pairs:
             # Checks if iterated pair is bigger than current one
             if (k <= i and l > j) or (k < i and l >= j):
@@ -142,38 +160,40 @@ def _get_amount_lines(ranks, cd):
     return longest
 
 
-def _get_element(l, n):
+def _get_element(input_list: List[Any], n: int) -> List[Any]:
     """Gets a specific element from a list of tuples.
 
     Args:
-        l (list): List to be iterated.
-        n (int): Element to be retrieved.
+        input_list: List to be iterated.
+        n: Element to be retrieved.
 
     Returns:
-        A new list with only the retrieved elements.
+        (List[Any]): Only retrieved elements.
 
     """
 
     if n < 0:
         # Adds the length of the list to gather the desired index
-        i = len(l[0]) + n
+        i = len(input_list[0]) + n
 
     else:
         # Use the index as usual
         i = n
 
-    return [a[i] for a in l]
+    return [a[i] for a in input_list]
 
 
-def _calculate_plot_properties(sort_ranks, cd):
+def _calculate_plot_properties(
+    sort_ranks: List[int], cd: float
+) -> Tuple[int, float, float, int, float, float]:
     """Calculates a set of properties used to accurately plot the statistical test.
 
     Args:
-        sort_ranks (list): List holding the sorted ranks.
-        cd (float): Critical difference.
+        sort_ranks: List holding the sorted ranks.
+        cd: Critical difference.
 
     Returns:
-        A set of properties used in the plot's construction.
+        (Tuple[int, float, float, int, float, float]): Properties used in the plot's construction.
 
     """
 
@@ -197,15 +217,15 @@ def _calculate_plot_properties(sort_ranks, cd):
     return n_ranks, height_distance, top_distance, n_lines, not_sig_distance, height
 
 
-def _prepare_plot(width, height):
+def _prepare_plot(width: float, height: float) -> Tuple[Figure, Axis]:
     """Prepares the plot prior to its use.
 
     Args:
-        width (float): Width of the plot.
-        height (float): Height of the plot.
+        width: Width of the plot.
+        height: Height of the plot.
 
     Returns:
-        The figure and axis properties from the plot.
+        (Tuple[Figure, Axis]): Figure and axis properties from the plot.
 
     """
 
@@ -219,7 +239,7 @@ def _prepare_plot(width, height):
     ax.set_axis_off()
 
     # Plots its boundaries
-    ax.plot([0, 1], [0, 1], c='w')
+    ax.plot([0, 1], [0, 1], c="w")
 
     # Sets the `x` and `y` limits
     ax.set_xlim(0, 1)
@@ -228,19 +248,21 @@ def _prepare_plot(width, height):
     return fig, ax
 
 
-def _position_rank(index, low, high, text_spacing, scale, reverse):
+def _position_rank(
+    index: int, low: int, high: int, text_spacing: int, scale: float, reverse: bool
+) -> int:
     """Positions a rank according to its value.
 
     Args:
-        index (int): Index to be positioned.
-        low (int): Minimum rank possible.
-        high (int): Maximum rank possible.
-        text_spacing (int): Text spacing inside the plot.
-        scale (float): Plot's scale.
-        reverse (bool): Whether plot should use ascending or descending order.
+        index: Index to be positioned.
+        low: Minimum rank possible.
+        high: Maximum rank possible.
+        text_spacing: Text spacing inside the plot.
+        scale: Plot's scale.
+        reverse: Whether plot should use ascending or descending order.
 
     Returns:
-        A value that indicates where the rank should be positioned in the plot.
+        (int): Rank should be positioned in the plot.
 
     """
 
@@ -253,15 +275,21 @@ def _position_rank(index, low, high, text_spacing, scale, reverse):
     return text_spacing + scale / (high - low) * x
 
 
-def plot_critical_difference(cd_dict, labels=None, width=6, text_spacing=2, reverse=False):
+def plot_critical_difference(
+    cd_dict: Dict[str, Any],
+    labels: Optional[List[str]] = None,
+    width: Optional[int] = 6,
+    text_spacing: Optional[int] = 2,
+    reverse: Optional[bool] = False,
+) -> None:
     """Plots the critical difference between the averaged ranks.
 
     Args:
-        cd_dict (dict): Dictionary of average ranks and critical differences.
-        labels (list): List of stringed labels.
-        width (int): Plot's width.
-        text_spacing (int): Text spacing inside the plot.
-        reverse (bool): Whether plot should use ascending or descending order.
+        cd_dict: Dictionary of average ranks and critical differences.
+        labels: List of stringed labels.
+        width: Plot's width.
+        text_spacing: Text spacing inside the plot.
+        reverse: Whether plot should use ascending or descending order.
 
     """
 
@@ -279,7 +307,9 @@ def plot_critical_difference(cd_dict, labels=None, width=6, text_spacing=2, reve
         sort_operator = sorted([(r, i) for i, r in enumerate(ranks)], reverse=reverse)
 
         # Gathers the sorted ranks and their indexes
-        sort_ranks, sort_idx = _get_element(sort_operator, 0), _get_element(sort_operator, 1)
+        sort_ranks, sort_idx = _get_element(sort_operator, 0), _get_element(
+            sort_operator, 1
+        )
 
         # Checks if labels exists and number of supplied labels equals the number of arguments
         if labels and len(labels) == len(ranks):
@@ -293,8 +323,14 @@ def plot_critical_difference(cd_dict, labels=None, width=6, text_spacing=2, reve
         sort_labels = [labels[i] for i in sort_idx]
 
         # Calculates a set of properties used to perform an accurate plot
-        n_ranks, height_distance, top_distance, n_lines, not_sig_distance, height = _calculate_plot_properties(
-            sort_ranks, cd)
+        (
+            n_ranks,
+            height_distance,
+            top_distance,
+            n_lines,
+            not_sig_distance,
+            height,
+        ) = _calculate_plot_properties(sort_ranks, cd)
 
         # Prepares the plot based on inputted width and calculated height
         fig, ax = _prepare_plot(width, height)
@@ -325,8 +361,14 @@ def plot_critical_difference(cd_dict, labels=None, width=6, text_spacing=2, reve
                 tick = big_tick
 
             # Defines `x` and `y` points
-            x = (_position_rank(a, low, high, text_spacing, scale, reverse), top_distance - tick / 2)
-            y = (_position_rank(a, low, high, text_spacing, scale, reverse), top_distance)
+            x = (
+                _position_rank(a, low, high, text_spacing, scale, reverse),
+                top_distance - tick / 2,
+            )
+            y = (
+                _position_rank(a, low, high, text_spacing, scale, reverse),
+                top_distance,
+            )
 
             # Plots a new line
             _plot_line(ax, [x, y], width_factor, height_factor, linewidth=0.7)
@@ -335,8 +377,16 @@ def plot_critical_difference(cd_dict, labels=None, width=6, text_spacing=2, reve
         # for plotting the text
         for a in range(low, high + 1):
             # Plots the text label
-            _plot_text(ax, _position_rank(a, low, high, text_spacing, scale, reverse), top_distance -
-                       tick / 2 - 0.05, str(a), width_factor, height_factor, ha='center', va='bottom')
+            _plot_text(
+                ax,
+                _position_rank(a, low, high, text_spacing, scale, reverse),
+                top_distance - tick / 2 - 0.05,
+                str(a),
+                width_factor,
+                height_factor,
+                ha="center",
+                va="bottom",
+            )
 
         # Iterates over every possible left-sided rank
         for i in range(int((n_ranks + 1) / 2)):
@@ -344,16 +394,30 @@ def plot_critical_difference(cd_dict, labels=None, width=6, text_spacing=2, reve
             arrow = top_distance + not_sig_distance + i * 0.2
 
             # Defines `x`, `y` and `z` points
-            x = (_position_rank(sort_ranks[i], low, high, text_spacing, scale, reverse), top_distance)
-            y = (_position_rank(sort_ranks[i], low, high, text_spacing, scale, reverse), arrow)
+            x = (
+                _position_rank(sort_ranks[i], low, high, text_spacing, scale, reverse),
+                top_distance,
+            )
+            y = (
+                _position_rank(sort_ranks[i], low, high, text_spacing, scale, reverse),
+                arrow,
+            )
             z = (text_spacing - 0.1, arrow)
 
             # Plots a new line
             _plot_line(ax, [x, y, z], width_factor, height_factor, linewidth=0.7)
 
             # Plots the text label
-            _plot_text(ax, text_spacing - 0.2, arrow,
-                       sort_labels[i], width_factor, height_factor, ha='right', va='center')
+            _plot_text(
+                ax,
+                text_spacing - 0.2,
+                arrow,
+                sort_labels[i],
+                width_factor,
+                height_factor,
+                ha="right",
+                va="center",
+            )
 
         # Iterates over every possible right-sided rank
         for i in range(int((n_ranks + 1) / 2), n_ranks):
@@ -361,16 +425,30 @@ def plot_critical_difference(cd_dict, labels=None, width=6, text_spacing=2, reve
             arrow = top_distance + not_sig_distance + (n_ranks - i - 1) * 0.2
 
             # Defines `x`, `y` and `z` points
-            x = (_position_rank(sort_ranks[i], low, high, text_spacing, scale, reverse), top_distance)
-            y = (_position_rank(sort_ranks[i], low, high, text_spacing, scale, reverse), arrow)
+            x = (
+                _position_rank(sort_ranks[i], low, high, text_spacing, scale, reverse),
+                top_distance,
+            )
+            y = (
+                _position_rank(sort_ranks[i], low, high, text_spacing, scale, reverse),
+                arrow,
+            )
             z = (text_spacing + scale + 0.1, arrow)
 
             # Plots a new line
             _plot_line(ax, [x, y, z], width_factor, height_factor, linewidth=0.7)
 
             # Plots the text label
-            _plot_text(ax, text_spacing + scale + 0.2, arrow,
-                       sort_labels[i], width_factor, height_factor, ha='left', va='center')
+            _plot_text(
+                ax,
+                text_spacing + scale + 0.2,
+                arrow,
+                sort_labels[i],
+                width_factor,
+                height_factor,
+                ha="left",
+                va="center",
+            )
 
         if reverse:
             # Calculates the starting and ending position from `high` values
@@ -383,29 +461,71 @@ def plot_critical_difference(cd_dict, labels=None, width=6, text_spacing=2, reve
             end = _position_rank(low + cd, low, high, text_spacing, scale, reverse)
 
         # Plots the starting and ending points of the CD line
-        _plot_line(ax, [(start, height_distance), (end, height_distance)], width_factor, height_factor, linewidth=0.7)
+        _plot_line(
+            ax,
+            [(start, height_distance), (end, height_distance)],
+            width_factor,
+            height_factor,
+            linewidth=0.7,
+        )
 
         # Plots the starting ticks of the CD line
-        _plot_line(ax, [(start, height_distance + big_tick / 2),
-                        (start, height_distance - big_tick / 2)], width_factor, height_factor, linewidth=0.7)
+        _plot_line(
+            ax,
+            [
+                (start, height_distance + big_tick / 2),
+                (start, height_distance - big_tick / 2),
+            ],
+            width_factor,
+            height_factor,
+            linewidth=0.7,
+        )
 
         # Plots the ending ticks of the CD line
-        _plot_line(ax, [(end, height_distance + big_tick / 2),
-                        (end, height_distance - big_tick / 2)], width_factor, height_factor, linewidth=0.7)
+        _plot_line(
+            ax,
+            [
+                (end, height_distance + big_tick / 2),
+                (end, height_distance - big_tick / 2),
+            ],
+            width_factor,
+            height_factor,
+            linewidth=0.7,
+        )
 
         # Plots the CD line itself
-        _plot_text(ax, (start + end) / 2, height_distance - 0.05, f'CD={cd}',
-                   width_factor, height_factor, ha='center', va='bottom')
+        _plot_text(
+            ax,
+            (start + end) / 2,
+            height_distance - 0.05,
+            f"CD={cd}",
+            width_factor,
+            height_factor,
+            ha="center",
+            va="bottom",
+        )
 
         # Plots non-significant lines
         # Defines a new starting point
         start = top_distance + 0.2
 
         # Iterates over every non-significant line
-        for l, r in n_lines:
+        for left, right in n_lines:
             # Defines `x` and `y` points
-            x = (_position_rank(sort_ranks[l], low, high, text_spacing, scale, reverse) - 0.05, start)
-            y = (_position_rank(sort_ranks[r], low, high, text_spacing, scale, reverse) + 0.05, start)
+            x = (
+                _position_rank(
+                    sort_ranks[left], low, high, text_spacing, scale, reverse
+                )
+                - 0.05,
+                start,
+            )
+            y = (
+                _position_rank(
+                    sort_ranks[right], low, high, text_spacing, scale, reverse
+                )
+                + 0.05,
+                start,
+            )
 
             # Plots the line
             _plot_line(ax, [x, y], width_factor, height_factor, linewidth=2.5)
@@ -417,4 +537,4 @@ def plot_critical_difference(cd_dict, labels=None, width=6, text_spacing=2, reve
         canvas = FigureCanvasAgg(fig)
 
         # Printing out the figure
-        canvas.print_figure(f'cd_{key}.pdf')
+        canvas.print_figure(f"cd_{key}.pdf")

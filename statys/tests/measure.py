@@ -4,10 +4,10 @@
 import numpy as np
 import scipy.stats as s
 
-import statys.utils.logging as l
 import statys.utils.wrappers as w
+from statys.utils import logging
 
-logger = l.get_logger(__name__)
+logger = logging.get_logger(__name__)
 
 
 def kurtosis(dist, **kwargs):
@@ -21,11 +21,11 @@ def kurtosis(dist, **kwargs):
 
     """
 
-    logger.info('Calculating kurtosis ...')
+    logger.info("Calculating kurtosis ...")
 
     output = w.measure_pipeline(s.kurtosis, dist, **kwargs)
 
-    logger.info('Kurtosis calculated.')
+    logger.info("Kurtosis calculated.")
     logger.debug(output)
 
     return output
@@ -42,11 +42,11 @@ def max(dist, **kwargs):
 
     """
 
-    logger.info('Finding maximum value ...')
+    logger.info("Finding maximum value ...")
 
     output = w.measure_pipeline(np.max, dist, **kwargs)
 
-    logger.info('Maximum value found.')
+    logger.info("Maximum value found.")
     logger.debug(output)
 
     return output
@@ -63,11 +63,11 @@ def mean(dist, **kwargs):
 
     """
 
-    logger.info('Calculating mean ...')
+    logger.info("Calculating mean ...")
 
     output = w.measure_pipeline(np.mean, dist, **kwargs)
 
-    logger.info('Mean calculated.')
+    logger.info("Mean calculated.")
     logger.debug(output)
 
     return output
@@ -84,11 +84,11 @@ def median(dist, **kwargs):
 
     """
 
-    logger.info('Calculating median ...')
+    logger.info("Calculating median ...")
 
     output = w.measure_pipeline(np.median, dist, **kwargs)
 
-    logger.info('Median calculated.')
+    logger.info("Median calculated.")
     logger.debug(output)
 
     return output
@@ -105,11 +105,11 @@ def min(dist, **kwargs):
 
     """
 
-    logger.info('Finding minimum value ...')
+    logger.info("Finding minimum value ...")
 
     output = w.measure_pipeline(np.min, dist, **kwargs)
 
-    logger.info('Minimum value found.')
+    logger.info("Minimum value found.")
     logger.debug(output)
 
     return output
@@ -126,11 +126,11 @@ def rank(dist, **kwargs):
 
     """
 
-    logger.info('Ranking distribution ...')
+    logger.info("Ranking distribution ...")
 
     output = w.measure_pipeline(s.rankdata, dist, **kwargs)
 
-    logger.info('Distribution ranked.')
+    logger.info("Distribution ranked.")
     logger.debug(output)
 
     return output
@@ -147,11 +147,11 @@ def skewness(dist, **kwargs):
 
     """
 
-    logger.info('Calculating skewness ...')
+    logger.info("Calculating skewness ...")
 
     output = w.measure_pipeline(s.skew, dist, **kwargs)
 
-    logger.info('Skewness calculated.')
+    logger.info("Skewness calculated.")
     logger.debug(output)
 
     return output
@@ -168,11 +168,11 @@ def std(dist, **kwargs):
 
     """
 
-    logger.info('Calculating standard deviation ...')
+    logger.info("Calculating standard deviation ...")
 
     output = w.measure_pipeline(np.std, dist, **kwargs)
 
-    logger.info('Standard deviation calculated.')
+    logger.info("Standard deviation calculated.")
     logger.debug(output)
 
     return output
@@ -189,11 +189,11 @@ def var(dist, **kwargs):
 
     """
 
-    logger.info('Calculating variance ...')
+    logger.info("Calculating variance ...")
 
     output = w.measure_pipeline(np.var, dist, **kwargs)
 
-    logger.info('Variance calculated.')
+    logger.info("Variance calculated.")
     logger.debug(output)
 
     return output

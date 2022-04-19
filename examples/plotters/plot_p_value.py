@@ -14,4 +14,4 @@ d = Distribution(x, y, z)
 signed_rank = w.signed_rank(d)
 
 # Plots the p-values
-s.plot_p_value(signed_rank, title='Wilcoxon Signed-Rank Test ($p$-values)')
+s.plot_p_value(signed_rank, title="Wilcoxon Signed-Rank Test ($p$-values)")

@@ -2,15 +2,20 @@
 """
 
 
-def calculate_hypothesis(p, alpha):
+from typing import Any, Dict
+
+from statys.core.distribution import Distribution
+
+
+def calculate_hypothesis(p: float, alpha: float) -> bool:
     """Calculates whether hypothesis' rejection fails or not according to a significance value.
 
     Args:
-        p (float): P-value from a statistical test.
-        alpha (float): Significance value.
+        p: P-value from a statistical test.
+        alpha: Significance value.
 
     Returns:
-        1 if hypothesis is rejected and 0 if it failed to be rejected.
+        (bool): 1 if hypothesis is rejected and 0 if it failed to be rejected.
 
     """
 
@@ -25,15 +30,15 @@ def calculate_hypothesis(p, alpha):
     return h
 
 
-def measure_pipeline(measure, dist, **kwargs):
+def measure_pipeline(measure: callable, dist: Distribution, **kwargs) -> Dict[str, Any]:
     """Wraps the pipeline of conducting a measure.
 
     Args:
-        measure (pointer): Pointer to a measure function.
-        dist (Distribution): Distribution to be analyzed.
+        measure: Pointer to a measure function.
+        dist: Distribution to be analyzed.
 
     Returns:
-        Dictionary holding the test's outputs.
+        (Dict[str, Any]): Test's outputs.
 
     """
 
@@ -47,16 +52,18 @@ def measure_pipeline(measure, dist, **kwargs):
     return output
 
 
-def statistical_pipeline(test, dist, alpha):
+def statistical_pipeline(
+    test: callable, dist: Distribution, alpha: float
+) -> Dict[str, Any]:
     """Wraps the pipeline of conducting a statistical test and calculating its hypothesis.
 
     Args:
-        test (pointer): Pointer to a statistical test.
-        dist (Distribution): Distribution to be analyzed.
-        alpha (float): Significance value.
+        test: Pointer to a statistical test.
+        dist: Distribution to be analyzed.
+        alpha: Significance value.
 
     Returns:
-        Dictionary holding the test's outputs.
+        (Dict[str, Any]): Test's outputs.
 
     """
 
@@ -70,7 +77,7 @@ def statistical_pipeline(test, dist, alpha):
 
             else:
                 # Creates a key to the dictionary
-                key = attr + '-' + attr2
+                key = attr + "-" + attr2
 
                 # Performs the statistical test
                 _, p = test(value, value2)

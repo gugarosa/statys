@@ -14,4 +14,4 @@ d = Distribution(x, y, z)
 signed_rank = w.signed_rank(d)
 
 # Plots the h-index
-s.plot_h_index(signed_rank, title='Wilcoxon Signed-Rank Test ($h$-index)')
+s.plot_h_index(signed_rank, title="Wilcoxon Signed-Rank Test ($h$-index)")

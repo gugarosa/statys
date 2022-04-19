@@ -19,7 +19,7 @@ def test_measure_pipeline():
 
     output = wrappers.measure_pipeline(f, d)
 
-    assert output['arg0'] == True
+    assert output["arg0"] is True
 
 
 def test_statistical_pipeline():
@@ -31,4 +31,4 @@ def test_statistical_pipeline():
 
     output = wrappers.statistical_pipeline(f, d, alpha)
 
-    assert output['arg0-arg1'] == (1, 0)
+    assert output["arg0-arg1"] == (1, 0)

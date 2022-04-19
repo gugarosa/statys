@@ -8,7 +8,7 @@ def test_friedman():
 
     output = friedman.friedman(d)
 
-    assert output['arg0'] == ((10.76923076923077, 11), (0.0, (11, 0)))
+    assert output["arg0"] == ((10.76923076923077, 11), (0.0, (11, 0)))
 
 
 def test_friedman_with_posthoc():
@@ -17,5 +17,5 @@ def test_friedman_with_posthoc():
 
     output = friedman.friedman_with_posthoc(d, axis=1)
 
-    assert len(output['arg0'][0]) == 6
-    assert output['arg0'][1] == 5.331310596344878
+    assert len(output["arg0"][0]) == 6
+    assert output["arg0"][1] == 5.331310596344878

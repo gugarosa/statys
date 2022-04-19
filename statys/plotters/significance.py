@@ -1,39 +1,42 @@
 """Significance-based plotting utilities, such as h-index and p-value.
 """
 
+from typing import Any, Dict, List, Optional
+
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.axis import Axis
 
 
-def _create_labels(size=1):
+def _create_labels(size: Optional[int] = 1) -> List[str]:
     """Creates a list of labels strings.
 
     Args:
-        size (int): Amount of strings to be created.
+        size: Amount of strings to be created.
 
     Returns:
-        A list of stringed labels, e.g., arg0, arg1, ..., argn.
+        (List[str]): Stringed labels, e.g., arg0, arg1, ..., argn.
 
     """
 
     labels = []
 
     for i in range(size):
-        labels.append(f'$arg_{{{i}}}$')
+        labels.append(f"$arg_{{{i}}}$")
 
     return labels
 
 
-def _prepare_plot(n_args, labels, title):
+def _prepare_plot(n_args: int, labels: List[str], title: str) -> Axis:
     """Prepares the plot with common definitions.
 
     Args:
-        n_args (int): Number of arguments.
-        labels (list): List of stringed labels.
-        title (str): Title to be displayed.
+        n_args: Number of arguments.
+        labels: List of stringed labels.
+        title: Title to be displayed.
 
     Returns:
-        The axis property from the plot.
+        (Axis): Axis property from the plot.
 
     """
 
@@ -59,8 +62,8 @@ def _prepare_plot(n_args, labels, title):
     ax.set_title(title)
     ax.set_xticks(np.arange(n_args + 1) - 0.5, minor=True)
     ax.set_yticks(np.arange(n_args + 1) - 0.5, minor=True)
-    ax.grid(which='minor', color='w', linestyle='-', linewidth=3)
-    ax.tick_params(which='minor', bottom=False, left=False)
+    ax.grid(which="minor", color="w", linestyle="-", linewidth=3)
+    ax.tick_params(which="minor", bottom=False, left=False)
 
     # Iterates through every spine
     for _, spine in ax.spines.items():
@@ -70,14 +73,19 @@ def _prepare_plot(n_args, labels, title):
     return ax
 
 
-def plot_p_value(p_dict, color_map='YlOrRd', labels=None, title=None):
+def plot_p_value(
+    p_dict: Dict[str, Any],
+    color_map: Optional[str] = "YlOrRd",
+    labels: Optional[List[str]] = None,
+    title: Optional[str] = None,
+) -> None:
     """Plots a p-value grid according to statistical results.
 
     Args:
-        p_dict (dict): Dictionary of significances and p-values.
-        color_map (str): A color map from matplotlib.
-        labels (list): List of stringed labels.
-        title (str): Title to be displayed.
+        p_dict: Significances and p-values.
+        color_map: Color map from matplotlib.
+        labels: Stringed labels.
+        title: Title to be displayed.
 
     """
 
@@ -92,7 +100,7 @@ def plot_p_value(p_dict, color_map='YlOrRd', labels=None, title=None):
 
     for k, v in p_dict.items():
         # Gathers the positions from the arguments
-        args = k.replace('arg', '').split('-')
+        args = k.replace("arg", "").split("-")
 
         # Transforms the positions into integers
         i, j = int(args[0]), int(args[1])
@@ -103,7 +111,7 @@ def plot_p_value(p_dict, color_map='YlOrRd', labels=None, title=None):
     # Iterates through the p-valued matrix
     for (i, j), z in np.ndenumerate(p):
         # Applies the corresponding value to the position
-        ax.text(j, i, '{:0.3f}'.format(1 - z), ha='center', va='center')
+        ax.text(j, i, "{:0.3f}".format(1 - z), ha="center", va="center")
 
     # Adds the significances to the plot
     ax.imshow(p, cmap=color_map)
@@ -112,14 +120,19 @@ def plot_p_value(p_dict, color_map='YlOrRd', labels=None, title=None):
     plt.show()
 
 
-def plot_h_index(h_dict, color_map='YlOrRd', labels=None, title=None):
+def plot_h_index(
+    h_dict: Dict[str, Any],
+    color_map: Optional[str] = "YlOrRd",
+    labels: Optional[List[str]] = None,
+    title: Optional[str] = None,
+) -> None:
     """Plots an h-index grid according to statistical results.
 
     Args:
-        h_dict (dict): Dictionary of h-indexes and p-values.
-        color_map (str): A color map from matplotlib.
-        labels (list): List of stringed labels.
-        title (str): Title to be displayed.
+        h_dict: H-indexes and p-values.
+        color_map: Color map from matplotlib.
+        labels: Stringed labels.
+        title: Title to be displayed.
 
     """
 
@@ -130,11 +143,11 @@ def plot_h_index(h_dict, color_map='YlOrRd', labels=None, title=None):
     ax = _prepare_plot(n_args, labels, title)
 
     # Instantiates the significance matrix
-    sigs = np.zeros((n_args, n_args), dtype='int')
+    sigs = np.zeros((n_args, n_args), dtype="int")
 
     for k, v in h_dict.items():
         # Gathers the positions from the arguments
-        args = k.replace('arg', '').split('-')
+        args = k.replace("arg", "").split("-")
 
         # Transforms the positions into integers
         i, j = int(args[0]), int(args[1])
@@ -145,7 +158,7 @@ def plot_h_index(h_dict, color_map='YlOrRd', labels=None, title=None):
     # Iterates through the significance matrix
     for (i, j), z in np.ndenumerate(sigs):
         # Applies the corresponding value to the position
-        ax.text(j, i, z, ha='center', va='center')
+        ax.text(j, i, z, ha="center", va="center")
 
     # Adds the significances to the plot
     ax.imshow(sigs, cmap=color_map)

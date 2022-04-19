@@ -5,9 +5,9 @@ import numpy as np
 
 import statys.tests.measure as m
 import statys.utils.constants as c
-import statys.utils.logging as l
+from statys.utils import logging
 
-logger = l.get_logger(__name__)
+logger = logging.get_logger(__name__)
 
 
 def friedman(dist, **kwargs):
@@ -21,7 +21,7 @@ def friedman(dist, **kwargs):
 
     """
 
-    logger.info('Performing Friedman test ...')
+    logger.info("Performing Friedman test ...")
 
     # Initializes a empty dictionary for the outputs
     output = {}
@@ -45,8 +45,12 @@ def friedman(dist, **kwargs):
         k = len(val)
 
         # Calculates the Friedman's statistic
-        f = 12 * n * (sum([v ** 2.0 for v in val]) -
-                      (k * (k + 1) * (k + 1) / 4)) / (k * (k + 1))
+        f = (
+            12
+            * n
+            * (sum([v**2.0 for v in val]) - (k * (k + 1) * (k + 1) / 4))
+            / (k * (k + 1))
+        )
 
         # Calculates the F-distribution
         f_dist = (k - 1, (k - 1) * (n - 1))
@@ -57,13 +61,13 @@ def friedman(dist, **kwargs):
         # Adds the tuple to the output dictionary
         output[key] = (f, k - 1), (iman, f_dist)
 
-    logger.info('Test performed.')
+    logger.info("Test performed.")
     logger.debug(output)
 
     return output
 
 
-def friedman_with_posthoc(dist, alpha=0.05, post_hoc='nemenyi', **kwargs):
+def friedman_with_posthoc(dist, alpha=0.05, post_hoc="nemenyi", **kwargs):
     """Performs the Friedman test with a post-hoc analysis.
 
     Args:
@@ -76,7 +80,7 @@ def friedman_with_posthoc(dist, alpha=0.05, post_hoc='nemenyi', **kwargs):
 
     """
 
-    logger.info('Performing Friedman-%s test ...', post_hoc)
+    logger.info("Performing Friedman-%s test ...", post_hoc)
 
     # Initializes a empty dictionary for the outputs
     output = {}
@@ -117,7 +121,7 @@ def friedman_with_posthoc(dist, alpha=0.05, post_hoc='nemenyi', **kwargs):
         # Adds the tuple to the output dictionary
         output[key] = (val, cd)
 
-    logger.info('Test performed.')
+    logger.info("Test performed.")
     logger.debug(output)
 
     return output

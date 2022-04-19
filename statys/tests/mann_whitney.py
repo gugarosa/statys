@@ -3,10 +3,10 @@
 
 import scipy.stats as s
 
-import statys.utils.logging as l
 import statys.utils.wrappers as w
+from statys.utils import logging
 
-logger = l.get_logger(__name__)
+logger = logging.get_logger(__name__)
 
 
 def u_test(dist, alpha=0.05):
@@ -21,11 +21,11 @@ def u_test(dist, alpha=0.05):
 
     """
 
-    logger.info('Performing Mann-Whitney U test ...')
+    logger.info("Performing Mann-Whitney U test ...")
 
     output = w.statistical_pipeline(s.mannwhitneyu, dist, alpha)
 
-    logger.info('Test performed.')
+    logger.info("Test performed.")
     logger.debug(output)
 
     return output
