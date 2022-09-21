@@ -42,11 +42,9 @@ def measure_pipeline(measure: callable, dist: Distribution, **kwargs) -> Dict[st
 
     """
 
-    # Initializes a empty dictionary for the outputs
     output = {}
 
     for (attr, value) in dist.attrs:
-        # Calculates the measure
         output[attr] = measure(value, **kwargs)
 
     return output
@@ -67,7 +65,6 @@ def statistical_pipeline(
 
     """
 
-    # Initializes a empty dictionary for the outputs
     output = {}
 
     for (attr, value) in dist.attrs:
@@ -76,16 +73,11 @@ def statistical_pipeline(
                 pass
 
             else:
-                # Creates a key to the dictionary
                 key = attr + "-" + attr2
 
-                # Performs the statistical test
                 _, p = test(value, value2)
-
-                # Calculates whether hypothesis fails to be rejected or not
                 h = calculate_hypothesis(p, alpha)
 
-                # Adds the tuple to the output dictionary
                 output[key] = (h, p)
 
     return output

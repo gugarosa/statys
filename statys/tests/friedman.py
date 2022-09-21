@@ -23,25 +23,19 @@ def friedman(dist, **kwargs):
 
     logger.info("Performing Friedman test ...")
 
-    # Initializes a empty dictionary for the outputs
     output = {}
 
     # Computes the average ranks (axis keyword should be used accordingly)
     average_ranks = m.rank(dist, **kwargs)
 
     for key, val in average_ranks.items():
-        # Initializes the number of measurements as one
         n = 1
 
-        # If argument has more than one measurement
         if val.ndim > 1:
-            # Gathers the number of measurements
             n = val.shape[0]
 
-            # Averages its rankings
             val = np.mean(val, axis=0)
 
-        # Gathers the amount of ranks
         k = len(val)
 
         # Calculates the Friedman's statistic
@@ -58,7 +52,6 @@ def friedman(dist, **kwargs):
         # Calculates the Iman's statistic
         iman = (n - 1) * f / (n * (k - 1) - f)
 
-        # Adds the tuple to the output dictionary
         output[key] = (f, k - 1), (iman, f_dist)
 
     logger.info("Test performed.")
@@ -82,7 +75,6 @@ def friedman_with_posthoc(dist, alpha=0.05, post_hoc="nemenyi", **kwargs):
 
     logger.info("Performing Friedman-%s test ...", post_hoc)
 
-    # Initializes a empty dictionary for the outputs
     output = {}
 
     # Computes the average ranks (axis keyword should be used accordingly)
@@ -97,28 +89,21 @@ def friedman_with_posthoc(dist, alpha=0.05, post_hoc="nemenyi", **kwargs):
     elif alpha == 0.1:
         critical_index = 2
 
-    # Gathers the corresponding critical values
     q = np.asarray(c.CRITICAL_VALUES[post_hoc])[:, critical_index]
 
     for key, val in average_ranks.items():
-        # Initializes the number of measurements as one
         n = 1
 
-        # If argument has more than one measurement
         if val.ndim > 1:
-            # Gathers the number of measurements
             n = val.shape[0]
 
-            # Averages its rankings
             val = np.mean(val, axis=0)
 
-        # Gathers the amount of ranks
         k = len(val)
 
         # Calculates the critical difference
         cd = q[k - 1] * (k * (k + 1) / (6 * n)) ** 0.5
 
-        # Adds the tuple to the output dictionary
         output[key] = (val, cd)
 
     logger.info("Test performed.")

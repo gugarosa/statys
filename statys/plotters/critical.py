@@ -91,11 +91,9 @@ def _plot_line(
 
     """
 
-    # Calculates the `x` and `y` elements
     x = _line_factoring(_get_element(input_list, 0), width_factor)
     y = _line_factoring(_get_element(input_list, 1), height_factor)
 
-    # Plots the pair of points
     ax.plot(x, y, color=color, **kwargs)
 
 
@@ -120,7 +118,6 @@ def _plot_text(
 
     """
 
-    # Plots the text itself
     ax.text(width_factor * x, height_factor * y, s, **kwargs)
 
 
@@ -136,25 +133,18 @@ def _get_amount_lines(ranks: List[int], cd: float) -> List[Tuple[Any, ...]]:
 
     """
 
-    # Calculates the number of possible ranks
     n_ranks = len(ranks)
 
-    # Transforms them into pairs
     pairs = [(i, j) for i, j in _multiple_range([[n_ranks], [n_ranks]]) if j > i]
-
-    # Remove non-significant pairs
     non_pairs = [(i, j) for i, j in pairs if abs(ranks[i] - ranks[j]) <= cd]
 
-    # Internal function to return the longest pairs
     def get_longest(i: int, j: int, pairs: Tuple[int, int]) -> bool:
         for k, l in pairs:
-            # Checks if iterated pair is bigger than current one
             if (k <= i and l > j) or (k < i and l >= j):
                 return False
 
         return True
 
-    # Keeps the longest pair
     longest = [(i, j) for i, j in non_pairs if get_longest(i, j, non_pairs)]
 
     return longest
@@ -173,11 +163,9 @@ def _get_element(input_list: List[Any], n: int) -> List[Any]:
     """
 
     if n < 0:
-        # Adds the length of the list to gather the desired index
         i = len(input_list[0]) + n
 
     else:
-        # Use the index as usual
         i = n
 
     return [a[i] for a in input_list]
@@ -197,21 +185,14 @@ def _calculate_plot_properties(
 
     """
 
-    # Gathers the number of possible ranks and (longest) lines
     n_ranks = len(sort_ranks)
     n_lines = _get_amount_lines(sort_ranks, cd)
 
-    # Instantiates the height distance as 0.25 and calculates top distance
     height_distance = 0.25
     top_distance = height_distance + 0.4
 
-    # Calculates the value of the blanked lines
     blank_lines = 0.2 + 0.2 + (len(n_lines) - 1) * 0.1
-
-    # Gathers the position of non-significant samples
     not_sig_distance = max(2 * 0.2, blank_lines)
-
-    # Finally, calculates the plot's height
     height = top_distance + ((n_ranks + 1) / 2) * 0.2 + not_sig_distance
 
     return n_ranks, height_distance, top_distance, n_lines, not_sig_distance, height
@@ -229,19 +210,13 @@ def _prepare_plot(width: float, height: float) -> Tuple[Figure, Axis]:
 
     """
 
-    # Creates a new figure based on inputted width and height
     fig = Figure(figsize=(width, height))
 
-    # Adds the corresponding axes to create a box
     ax = fig.add_axes([0, 0, 1, 1])
-
-    # Sets the outer box display as off
     ax.set_axis_off()
 
-    # Plots its boundaries
     ax.plot([0, 1], [0, 1], c="w")
 
-    # Sets the `x` and `y` limits
     ax.set_xlim(0, 1)
     ax.set_ylim(1, 0)
 
@@ -293,33 +268,23 @@ def plot_critical_difference(
 
     """
 
-    # Defines the plot's scale
     scale = width - 2 * text_spacing
 
     for key, v in cd_dict.items():
-        # Gathers the minimum and maximum possible ranks
         low, high = 1, v[0].shape[0]
-
-        # Gathers current item ranks and its critical difference
         ranks, cd = v[0], v[1]
 
-        # Defines a sorting-based operator
         sort_operator = sorted([(r, i) for i, r in enumerate(ranks)], reverse=reverse)
-
-        # Gathers the sorted ranks and their indexes
         sort_ranks, sort_idx = _get_element(sort_operator, 0), _get_element(
             sort_operator, 1
         )
 
-        # Checks if labels exists and number of supplied labels equals the number of arguments
         if labels and len(labels) == len(ranks):
             pass
 
         else:
-            # Re-creates the labels list
             labels = _create_labels(len(ranks))
 
-        # Gathers the sorted labels as well
         sort_labels = [labels[i] for i in sort_idx]
 
         # Calculates a set of properties used to perform an accurate plot
@@ -332,35 +297,27 @@ def plot_critical_difference(
             height,
         ) = _calculate_plot_properties(sort_ranks, cd)
 
-        # Prepares the plot based on inputted width and calculated height
         fig, ax = _prepare_plot(width, height)
 
-        # Calculates the width and height factors
         width_factor = 1 / width
         height_factor = 1 / height
 
-        # Defines `x` and `y` points
         x = (text_spacing, top_distance)
         y = (width - text_spacing, top_distance)
 
-        # Plots the first line
         _plot_line(ax, [x, y], width_factor, height_factor, linewidth=0.7)
 
-        # Defines regular, big and small ticks sizes
         big_tick = 0.1
         small_tick = 0.05
 
         # Iterates over every possible value between low and high
         # for plotting the ticks
         for a in list(np.arange(low, high, 0.5)) + [high]:
-            # Gathers the current tick as smallest one
             tick = small_tick
 
             if isinstance(a, int):
-                # Gathers the current tick as biggest one
                 tick = big_tick
 
-            # Defines `x` and `y` points
             x = (
                 _position_rank(a, low, high, text_spacing, scale, reverse),
                 top_distance - tick / 2,
@@ -370,13 +327,11 @@ def plot_critical_difference(
                 top_distance,
             )
 
-            # Plots a new line
             _plot_line(ax, [x, y], width_factor, height_factor, linewidth=0.7)
 
         # Iterates over every possible value between low and high
         # for plotting the text
         for a in range(low, high + 1):
-            # Plots the text label
             _plot_text(
                 ax,
                 _position_rank(a, low, high, text_spacing, scale, reverse),
@@ -393,7 +348,6 @@ def plot_critical_difference(
             # Calculates the "line-arrow"
             arrow = top_distance + not_sig_distance + i * 0.2
 
-            # Defines `x`, `y` and `z` points
             x = (
                 _position_rank(sort_ranks[i], low, high, text_spacing, scale, reverse),
                 top_distance,
@@ -404,10 +358,7 @@ def plot_critical_difference(
             )
             z = (text_spacing - 0.1, arrow)
 
-            # Plots a new line
             _plot_line(ax, [x, y, z], width_factor, height_factor, linewidth=0.7)
-
-            # Plots the text label
             _plot_text(
                 ax,
                 text_spacing - 0.2,
@@ -424,7 +375,6 @@ def plot_critical_difference(
             # Calculates the "line-arrow"
             arrow = top_distance + not_sig_distance + (n_ranks - i - 1) * 0.2
 
-            # Defines `x`, `y` and `z` points
             x = (
                 _position_rank(sort_ranks[i], low, high, text_spacing, scale, reverse),
                 top_distance,
@@ -435,10 +385,7 @@ def plot_critical_difference(
             )
             z = (text_spacing + scale + 0.1, arrow)
 
-            # Plots a new line
             _plot_line(ax, [x, y, z], width_factor, height_factor, linewidth=0.7)
-
-            # Plots the text label
             _plot_text(
                 ax,
                 text_spacing + scale + 0.2,
@@ -506,12 +453,9 @@ def plot_critical_difference(
         )
 
         # Plots non-significant lines
-        # Defines a new starting point
         start = top_distance + 0.2
 
-        # Iterates over every non-significant line
         for left, right in n_lines:
-            # Defines `x` and `y` points
             x = (
                 _position_rank(
                     sort_ranks[left], low, high, text_spacing, scale, reverse
@@ -527,14 +471,10 @@ def plot_critical_difference(
                 start,
             )
 
-            # Plots the line
             _plot_line(ax, [x, y], width_factor, height_factor, linewidth=2.5)
 
             # Adds height to distinguish between lines
             start += 0.1
 
-        # Adding a figure to the canvas
         canvas = FigureCanvasAgg(fig)
-
-        # Printing out the figure
         canvas.print_figure(f"cd_{key}.pdf")

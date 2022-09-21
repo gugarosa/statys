@@ -40,15 +40,12 @@ def _prepare_plot(n_args: int, labels: List[str], title: str) -> Axis:
 
     """
 
-    # Creates the figure and its axis
     _, ax = plt.subplots()
 
-    # Checks if labels exists and number of supplied labels equals the number of arguments
     if labels and len(labels) == n_args:
         pass
 
     else:
-        # Re-creates the labels list
         labels = _create_labels(n_args)
 
     # Defines axis properties
@@ -65,9 +62,7 @@ def _prepare_plot(n_args: int, labels: List[str], title: str) -> Axis:
     ax.grid(which="minor", color="w", linestyle="-", linewidth=3)
     ax.tick_params(which="minor", bottom=False, left=False)
 
-    # Iterates through every spine
     for _, spine in ax.spines.items():
-        # Removes the outline border
         spine.set_visible(False)
 
     return ax
@@ -92,7 +87,6 @@ def plot_p_value(
     # Calculates the number of arguments by solving: y = x^2 - x
     n_args = round(np.roots([1, -1, -len(p_dict)])[0])
 
-    # Prepares the plot using common-based definitions
     ax = _prepare_plot(n_args, labels, title)
 
     # Instantiates the p-valued matrix
@@ -102,10 +96,7 @@ def plot_p_value(
         # Gathers the positions from the arguments
         args = k.replace("arg", "").split("-")
 
-        # Transforms the positions into integers
         i, j = int(args[0]), int(args[1])
-
-        # Replaces its value
         p[i][j] = 1 - v[1]
 
     # Iterates through the p-valued matrix
@@ -113,10 +104,7 @@ def plot_p_value(
         # Applies the corresponding value to the position
         ax.text(j, i, "{:0.3f}".format(1 - z), ha="center", va="center")
 
-    # Adds the significances to the plot
     ax.imshow(p, cmap=color_map)
-
-    # Displays the plot
     plt.show()
 
 
@@ -139,7 +127,6 @@ def plot_h_index(
     # Calculates the number of arguments by solving: y = x^2 - x
     n_args = round(np.roots([1, -1, -len(h_dict)])[0])
 
-    # Prepares the plot using common-based definitions
     ax = _prepare_plot(n_args, labels, title)
 
     # Instantiates the significance matrix
@@ -149,10 +136,7 @@ def plot_h_index(
         # Gathers the positions from the arguments
         args = k.replace("arg", "").split("-")
 
-        # Transforms the positions into integers
         i, j = int(args[0]), int(args[1])
-
-        # Replaces its value
         sigs[i][j] = v[0]
 
     # Iterates through the significance matrix
@@ -160,8 +144,5 @@ def plot_h_index(
         # Applies the corresponding value to the position
         ax.text(j, i, z, ha="center", va="center")
 
-    # Adds the significances to the plot
     ax.imshow(sigs, cmap=color_map)
-
-    # Displays the plot
     plt.show()
