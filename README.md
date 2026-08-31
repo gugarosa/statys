@@ -9,9 +9,15 @@ Statys provides descriptive measures, pairwise non-parametric tests, Friedman
 and Iman-Davenport statistics, Nemenyi critical differences, and comparison
 plots.
 
-Statys requires Python 3.11 or newer.
-
 ## Installation
+
+Statys requires Python 3.11 or newer. Add it to a project managed by uv with:
+
+```bash
+uv add statys
+```
+
+For a consumer installation in an existing Python environment, pip is also supported:
 
 ```bash
 pip install statys
