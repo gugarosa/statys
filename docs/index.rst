@@ -1,8 +1,9 @@
 Statys
 ======
 
-Statys provides Friedman and Iman-Davenport statistics, Nemenyi critical
-differences, and critical-difference diagrams.
+Statys provides descriptive measures, pairwise non-parametric tests, Friedman
+and Iman-Davenport statistics, Nemenyi critical differences, and comparison
+plots.
 
 Statys requires Python 3.11 or newer.
 

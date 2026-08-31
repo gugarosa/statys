@@ -3,7 +3,6 @@ import pytest
 
 from statys import friedman, nemenyi
 
-
 DATA = np.array(
     [
         [1, 2, 3],

@@ -1,8 +1,8 @@
 """Critical-difference diagrams."""
 
+from collections.abc import Sequence
 from itertools import combinations
 from pathlib import Path
-from collections.abc import Sequence
 
 import numpy as np
 from matplotlib.figure import Figure
@@ -148,7 +148,9 @@ def plot_critical_difference(
 
     anchor = high if reverse else low
     start = position(anchor)
-    end = position(anchor - critical_difference if reverse else anchor + critical_difference)
+    end = position(
+        anchor - critical_difference if reverse else anchor + critical_difference
+    )
     line(
         [(start, height_distance), (end, height_distance)],
         color="k",

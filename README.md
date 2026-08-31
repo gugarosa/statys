@@ -5,9 +5,9 @@
 [![PyPI](https://img.shields.io/pypi/v/statys)](https://pypi.org/project/statys/)
 [![License](https://img.shields.io/github/license/gugarosa/statys)](LICENSE)
 
-Statys provides Friedman and Iman-Davenport statistics, Nemenyi critical
-differences, and critical-difference diagrams for comparing treatments or
-algorithms across repeated experimental blocks.
+Statys provides descriptive measures, pairwise non-parametric tests, Friedman
+and Iman-Davenport statistics, Nemenyi critical differences, and comparison
+plots.
 
 Statys requires Python 3.11 or newer.
 
@@ -17,7 +17,7 @@ Statys requires Python 3.11 or newer.
 pip install statys
 ```
 
-## Example
+## Repeated comparisons
 
 ```python
 import numpy as np
@@ -44,6 +44,29 @@ plot_critical_difference(
 ```
 
 Rows are experimental blocks and columns are the treatments being compared.
+
+## Measures and pairwise tests
+
+```python
+from statys import measures, pairwise, significance
+
+control = [0.82, 0.80, 0.84, 0.79]
+model_a = [0.79, 0.77, 0.81, 0.75]
+model_b = [0.75, 0.78, 0.76, 0.74]
+
+print(measures.mean(control, model_a, model_b))
+
+results = pairwise.signed_rank(control, model_a, model_b)
+significance.plot_p_value(
+    results,
+    labels=["Control", "Model A", "Model B"],
+    output="p-values.pdf",
+)
+```
+
+The `measures` module also provides `kurtosis`, `max`, `median`, `min`, `rank`,
+`skewness`, `std`, and `var`. The `pairwise` module provides `u_test`,
+`signed_rank`, and `rank_sum`.
 
 ## Development
 

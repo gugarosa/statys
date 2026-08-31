@@ -45,8 +45,6 @@ def nemenyi(data, alpha: float = 0.05) -> tuple[np.ndarray, float]:
     n_blocks, n_treatments = values.shape
     ranks = stats.rankdata(values, axis=1).mean(axis=0)
     q = stats.studentized_range.ppf(1 - alpha, n_treatments, inf) / sqrt(2)
-    critical_difference = q * sqrt(
-        n_treatments * (n_treatments + 1) / (6 * n_blocks)
-    )
+    critical_difference = q * sqrt(n_treatments * (n_treatments + 1) / (6 * n_blocks))
 
     return ranks, float(critical_difference)
