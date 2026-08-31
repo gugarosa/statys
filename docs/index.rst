@@ -1,18 +1,16 @@
-Welcome to Statys' documentation!
-=======================================
+Statys
+======
 
-Do you feel the urge to create better insights and statistically analyzing your experimental results? Are you tired of re-implementing statistical tests for every analysis? If yes, Statys is the real deal! This package provides an easy-to-go implementation of statistical analyzers. From sampling measurements to non-parametric tests, we will foster all research related to statistical tests.
+Statys provides Friedman and Iman-Davenport statistics, Nemenyi critical
+differences, and critical-difference diagrams.
 
-Statys is compatible with: **Python 3.6+**.
+Statys requires Python 3.11 or newer.
 
 .. toctree::
     :maxdepth: 2
-    :caption: Package Reference
+    :caption: Reference
 
-    api/statys.core
-    api/statys.plotters
-    api/statys.tests
-    api/statys.utils
+    api
 
 Indices and tables
 ==================

@@ -1,2 +1,57 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "statys"
+version = "2.0.0"
+description = "Statistical comparison tools"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+authors = [
+    { name = "Gustavo Rosa", email = "gustavo.rosa@unesp.br" },
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering",
+]
+dependencies = [
+    "matplotlib>=3.7",
+    "numpy>=1.24",
+    "scipy>=1.10",
+]
+
+[project.optional-dependencies]
+docs = ["sphinx>=9"]
+
+[project.urls]
+Homepage = "https://github.com/gugarosa/statys"
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.3",
+    "pytest>=9",
+]
+
+[tool.setuptools.packages.find]
+include = ["statys*"]
+
 [tool.black]
 line-length = 88
+target-version = ["py311"]
+
+[tool.isort]
+profile = "black"
+
+[tool.pytest.ini_options]
+addopts = ["-v", "--durations=10"]
+norecursedirs = ["build"]
+testpaths = ["tests"]

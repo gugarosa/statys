@@ -15,10 +15,10 @@ Thank you!
 
 ### Pre-checkings
 
-- [ ] Check that you are up-to-date with the master branch of Statys. You can update with:
-pip install git+git://github.com/gugarosa/statys.git --upgrade --no-deps
+- [ ] Check that you are up-to-date with the main branch of Statys. You can update with:
+`pip install git+https://github.com/gugarosa/statys.git --upgrade --no-deps`
 
-- [ ] Check that you have read all of our [README](https://github.com/gugarosa/statys/blob/master/README.md).
+- [ ] Check that you have read all of our [README](https://github.com/gugarosa/statys/blob/main/README.md).
 
 ### Description
 
