@@ -30,7 +30,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-docs = ["sphinx>=9"]
+docs = ["sphinx>=9.0.4"]
 
 [project.urls]
 Homepage = "https://github.com/gugarosa/statys"
