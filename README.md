@@ -50,6 +50,15 @@ plot_critical_difference(
 ```
 
 Rows are experimental blocks and columns are the treatments being compared.
+Smaller values receive lower ranks, with average ranks for ties. For metrics
+where larger is better (such as accuracy), use `nemenyi(-scores)` to give
+better treatments lower ranks.
+
+`friedman` returns `((chi_square, df), (F, (df1, df2)))`, with tie correction
+from SciPy and an Iman-Davenport F statistic. Perfect agreement between
+non-constant block rankings gives `F = inf`. NaN inputs or blocks that all
+tie every treatment give undefined (`nan`) statistics, not evidence for
+the null hypothesis.
 
 ## Measures and pairwise tests
 
@@ -73,6 +82,24 @@ significance.plot_p_value(
 The `measures` module also provides `kurtosis`, `max`, `median`, `min`, `rank`,
 `skewness`, `std`, and `var`. The `pairwise` module provides `u_test`,
 `signed_rank`, and `rank_sum`.
+
+Pairwise results map `arg{i}-arg{j}` (`i < j`) to `(reject, p_value)`, in input
+order. `reject` is `1` when `p_value < alpha` and `0` otherwise; p-values are
+not adjusted for multiple comparisons. Additional keyword arguments are
+forwarded to SciPy. The signed-rank test requires aligned, paired observations;
+the other two tests compare independent samples. Use `u_test` rather than
+`rank_sum` when tie correction is needed.
+
+A test producing a non-finite p-value raises `ValueError` identifying the
+affected pair rather than reporting a false no-rejection decision. Missing
+data handling can be selected explicitly, for example with `nan_policy="omit"`.
+
+Significance plots mirror each stored comparison into both matrix halves.
+For one-sided tests, that result retains the original input order; the
+mirrored cell is not a test in the opposite direction. Missing comparisons
+remain blank. P-value colors use `1 - p` on a fixed zero-to-one scale, so
+colors have the same meaning across plots; annotations show the original
+p-values.
 
 ## Development
 

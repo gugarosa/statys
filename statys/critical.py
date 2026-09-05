@@ -1,28 +1,30 @@
 """Critical-difference diagrams."""
 
 from collections.abc import Sequence
-from itertools import combinations
 from pathlib import Path
 
 import numpy as np
 from matplotlib.figure import Figure
 
 
-def _maximal_intervals(ranks: np.ndarray, critical_difference: float):
-    intervals = [
-        (left, right)
-        for left, right in combinations(range(len(ranks)), 2)
-        if abs(ranks[left] - ranks[right]) <= critical_difference
-    ]
-    return [
-        (left, right)
-        for left, right in intervals
-        if not any(
-            (outer_left <= left and outer_right > right)
-            or (outer_left < left and outer_right >= right)
-            for outer_left, outer_right in intervals
-        )
-    ]
+def _maximal_intervals(
+    ranks: np.ndarray, critical_difference: float
+) -> list[tuple[int, int]]:
+    """Find maximal non-significant groups in ascending or descending ranks."""
+
+    intervals = []
+    right = 0
+    for left in range(len(ranks) - 1):
+        right = max(left, right)
+        while (
+            right + 1 < len(ranks)
+            and abs(ranks[left] - ranks[right + 1]) <= critical_difference
+        ):
+            right += 1
+        # A window ending no farther right is contained in the previous one.
+        if right > left and (not intervals or right > intervals[-1][1]):
+            intervals.append((left, right))
+    return intervals
 
 
 def plot_critical_difference(

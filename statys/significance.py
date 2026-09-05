@@ -1,5 +1,12 @@
-"""Significance and p-value matrix plots."""
+"""Significance and p-value matrix plots.
 
+Inputs are result dictionaries from ``statys.pairwise``. Both matrix halves
+display the same stored comparison; a one-sided test keeps the direction of
+its original argument order, not the direction of a matrix cell. Missing
+comparisons are left blank.
+"""
+
+import re
 from pathlib import Path
 
 import numpy as np
@@ -12,12 +19,16 @@ def _matrix(results, value_index, diagonal):
 
     pairs = []
     for key, result in results.items():
-        try:
-            left, right = (
-                int(value.removeprefix("arg")) for value in key.split("-", 1)
-            )
-        except (TypeError, ValueError) as error:
-            raise ValueError(f"invalid pairwise result key: {key!r}") from error
+        match = (
+            re.fullmatch(r"arg([0-9]+)-arg([0-9]+)", key)
+            if isinstance(key, str)
+            else None
+        )
+        if match is None:
+            raise ValueError(f"invalid pairwise result key: {key!r}")
+        left, right = map(int, match.groups())
+        if left == right:
+            raise ValueError(f"invalid pairwise result key: {key!r}")
         pairs.append((left, right, result[value_index]))
 
     size = max(max(left, right) for left, right, _ in pairs) + 1
@@ -57,7 +68,7 @@ def _plot(matrix, color_map, labels, title, formatter, output, colors=None):
                 ha="center",
                 va="center",
             )
-    axis.imshow(matrix if colors is None else colors, cmap=color_map)
+    axis.imshow(matrix if colors is None else colors, cmap=color_map, vmin=0, vmax=1)
 
     if output is not None:
         figure.savefig(output)
@@ -71,7 +82,11 @@ def plot_p_value(
     title=None,
     output: str | Path | None = None,
 ) -> Figure:
-    """Plot pairwise p-values."""
+    """Plot p-values, coloring ``1 - p`` on a fixed zero-to-one scale.
+
+    Annotations show the original p-values. Lower p-values receive stronger
+    colors with the default colormap, consistently across separate plots.
+    """
 
     matrix = _matrix(results, value_index=1, diagonal=1)
     return _plot(
