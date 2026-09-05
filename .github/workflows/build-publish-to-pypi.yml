@@ -3,19 +3,68 @@ name: Publish to PyPI
 on:
   release:
     types: [published]
+  workflow_call:
+    secrets:
+      PYPI_API_TOKEN:
+        required: true
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: statys-pypi
+  cancel-in-progress: false
 
 jobs:
   publish:
+    if: >-
+      github.event_name == 'release' ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
       - uses: astral-sh/setup-uv@v10.0.1
         with:
           python-version: "3.11"
+      - name: Check release version
+        id: version
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        shell: bash
+        run: |
+          version="$(uv version --short)"
+          tag="v${version}"
+          existing_tag="$(git tag --list "$tag")"
+
+          if [[ "$GITHUB_EVENT_NAME" == "release" && "$RELEASE_TAG" != "$tag" ]]; then
+            echo "::error::Release tag $RELEASE_TAG does not match package version $version"
+            exit 1
+          fi
+
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          if [[ "$GITHUB_EVENT_NAME" == "release" || -z "$existing_tag" ]]; then
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "Version $version is already tagged; nothing to publish."
+          fi
       - run: uv build
+        if: steps.version.outputs.publish == 'true'
       - uses: pypa/gh-action-pypi-publish@release/v1
+        if: steps.version.outputs.publish == 'true'
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
+          # Only an explicit rerun may resume a partially uploaded release.
+          skip-existing: ${{ github.run_attempt > 1 }}
+      - name: Create GitHub release
+        if: steps.version.outputs.publish == 'true' && github.event_name != 'release'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.version.outputs.tag }}
+        run: >-
+          gh release create "$RELEASE_TAG" dist/*
+          --target "$GITHUB_SHA"
+          --title "Statys $RELEASE_TAG"
+          --generate-notes
