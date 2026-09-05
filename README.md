@@ -112,3 +112,19 @@ uv build
 
 Documentation is available at
 [statys.readthedocs.io](https://statys.readthedocs.io).
+
+## Releasing
+
+Use `uv version --bump patch` (or the appropriate version increment), update
+`statys.__version__` to match, and open a pull request for review.
+
+After the pull request is merged into `main` and the full CI matrix succeeds,
+the release job publishes the untagged version to PyPI and creates a GitHub
+release and tag at that commit. Already-tagged versions are not republished.
+Publication uses the repository's `PYPI_API_TOKEN` secret and does not depend
+on a local CLI session.
+
+Publishing a GitHub release manually remains supported; its tag must match
+the package version, prefixed with `v`. First attempts fail on duplicate PyPI
+files. An explicit rerun of the same workflow can resume a partial upload,
+skipping existing files rather than replacing them.
