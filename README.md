@@ -107,8 +107,75 @@ p-values.
 uv sync
 uv run pytest
 uv run pre-commit run --all-files
+uv run --extra docs sphinx-build -W --keep-going -b html docs docs/_build/html
 uv build
 ```
+
+`pytest` also executes the examples in public docstrings. CI runs the
+interpreter matrix, existing style hooks, and a warning-as-error documentation
+build before permitting a release.
+
+### Code style
+
+Adapted from [cpmux's conventions](https://github.com/gugarosa/cpmux/blob/main/CONVENTIONS.md),
+using the corresponding phitrain rule IDs:
+
+- Use modern unions (`X | None`) and builtin generics (`dict[str, Any]`, `list[str]`).
+  Import ABCs such as `Callable` and `Iterable` from `collections.abc`, not `typing`.
+  Keep syntax compatible with Statys's declared Python 3.11+ support. (R2)
+- Keep imports top-level and absolute (`from statys.x import y`), grouped as stdlib,
+  third-party, then local imports, with blank lines between groups.
+- Public APIs use [Google-style docstrings][google-docstrings] with a single-sentence
+  summary and one-line `Args:`, `Returns:`, and `Raises:` entries. Do not put semicolons
+  or `defaults to <X>` tails in entries. Keep detailed contracts and examples in
+  `Notes:` and `Examples:` rather than discarding them. (R3, R13)
+- Keep one blank line before a docstring's closing `"""` and one blank line after it
+  before the first statement or field. Private helpers and framework-dispatched
+  overrides have no docstrings. Test functions stay plain, without docstrings or type hints.
+- A regular class has a single-sentence class summary and documents constructor
+  arguments on `__init__`. Data classes without an explicit constructor document every
+  field in `Attributes:`, one `name: what it holds.` entry per line.
+- Raised messages name the backticked argument or offender and end with a period:
+  `` "`<name>` <verb-phrase>[, but got <value>]." ``. Use `is None`/`is True` prose. (R1)
+- Runtime validation uses `if`/`raise` with a specific exception, not `assert`.
+  Never use a bare `except:` or translate dependency failures into successful-looking defaults.
+- Comments explain why, not what. Prefer no comment or one line, with a three-line
+  maximum, no banner separators, and no trailing period. Copyright/license notices
+  retain their prescribed punctuation. Preserve attribution for adapted code. (R8)
+- Separate logical phases with a single blank line in function bodies of at least
+  12 lines. Do not insert a blank line after every statement. (R11)
+- Inline first. Extract helpers, constants, or parameters when a second call site
+  establishes reuse, rather than adding speculative abstractions. Preserve supported public APIs. (R16)
+- Use double-quoted string literals. Code and readable prose stay within 120 columns,
+  using the existing Black, isort, and Flake8 tools without broad suppressions. (R9)
+- Never use `print()` in library code. If logging is introduced, follow the shared
+  `get_logger(__name__)` pattern. Warning/error diagnostics use a backticked offender
+  and a trailing period (`` "`name=value` <verb-phrase>." ``), while info/debug stay plain. (R14)
+
+Every tracked Python file starts with this two-line header:
+
+```python
+# Copyright (c) 2020-2026 Gustavo de Rosa.
+# Licensed under the Apache License, Version 2.0.
+```
+
+Statys has no logging or application-framework layer to adapt, so these conventions
+do not introduce cpmux, Rich, Typer, Textual, or Pydantic dependencies. Example scripts
+are consumers rather than library code and may print their results. The Apache-2.0
+license and supported package-level exports remain unchanged.
+
+[google-docstrings]: https://google.github.io/styleguide/pyguide.html#383-functions-and-methods
+
+The library ships inline type information. Array inputs use
+`numpy.typing.ArrayLike`; rank arrays and fixed result tuples have concrete
+annotations. Measure return values and forwarded keyword arguments remain
+dynamic because NumPy/SciPy determine their type from the input dtype and
+options. Do not narrow these contracts by coercing or copying inputs merely
+to satisfy a type annotation.
+
+Keep stateless operations as functions and share actual responsibilities such as
+the pairwise comparison loop. Use NumPy/SciPy for statistical primitives and explicit
+Matplotlib figures for plotting, without new factories or global plotting state.
 
 Documentation is available at
 [statys.readthedocs.io](https://statys.readthedocs.io).

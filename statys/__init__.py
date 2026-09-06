@@ -1,4 +1,12 @@
-"""Statistical comparison tools."""
+# Copyright (c) 2020-2026 Gustavo de Rosa.
+# Licensed under the Apache License, Version 2.0.
+
+"""Statistical comparison tools.
+
+Comparison functions are available at package level alongside the measures,
+pairwise, and significance modules.
+
+"""
 
 from statys import measures, pairwise, significance
 from statys.critical import plot_critical_difference

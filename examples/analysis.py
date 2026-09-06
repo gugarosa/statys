@@ -1,3 +1,6 @@
+# Copyright (c) 2020-2026 Gustavo de Rosa.
+# Licensed under the Apache License, Version 2.0.
+
 from statys import measures, pairwise, significance
 
 control = [0.82, 0.80, 0.84, 0.79]

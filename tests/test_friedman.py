@@ -1,3 +1,6 @@
+# Copyright (c) 2020-2026 Gustavo de Rosa.
+# Licensed under the Apache License, Version 2.0.
+
 from math import inf
 
 import numpy as np
@@ -40,7 +43,7 @@ def test_friedman_near_perfect_agreement():
 
     _, (iman, _) = friedman(data)
 
-    # One swapped pair has residual rank sum of squares 1, not zero.
+    # One swapped pair has residual rank sum of squares 1, not zero
     expected = count * (count**2 - 1) / 6 - 1
     assert iman == pytest.approx(expected, rel=1e-12)
 
@@ -76,8 +79,11 @@ def test_nemenyi():
 
 
 def test_invalid_data():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r"^`data` must contain at least two blocks and two treatments\.$"):
         friedman([1, 2, 3])
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r"^`data` must contain at least three treatments for Friedman's test\.$"):
+        friedman(DATA[:, :2])
+
+    with pytest.raises(ValueError, match=r"^`alpha` must be between 0 and 1, but got 1\.$"):
         nemenyi(DATA, alpha=1)

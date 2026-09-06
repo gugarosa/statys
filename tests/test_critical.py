@@ -1,3 +1,6 @@
+# Copyright (c) 2020-2026 Gustavo de Rosa.
+# Licensed under the Apache License, Version 2.0.
+
 from itertools import combinations, combinations_with_replacement
 
 import numpy as np
@@ -35,18 +38,11 @@ def test_maximal_intervals_match_pairwise_non_significance():
                     )
                 ]
                 expected = sorted(
-                    (min(group), max(group))
-                    for group in groups
-                    if not any(group < other for other in groups)
+                    (min(group), max(group)) for group in groups if not any(group < other for other in groups)
                 )
 
-                assert (
-                    _maximal_intervals(np.asarray(values), critical_difference)
-                    == expected
-                )
-                assert _maximal_intervals(
-                    np.asarray(values[::-1]), critical_difference
-                ) == sorted(
+                assert _maximal_intervals(np.asarray(values), critical_difference) == expected
+                assert _maximal_intervals(np.asarray(values[::-1]), critical_difference) == sorted(
                     (size - 1 - right, size - 1 - left) for left, right in expected
                 )
 
@@ -59,3 +55,26 @@ def test_diagram_keeps_overlapping_non_significant_groups(reverse):
     assert len(groups) == 2
     np.testing.assert_allclose(groups[0].get_xdata(), np.array([1.95, 3.05]) / 6)
     np.testing.assert_allclose(groups[1].get_xdata(), np.array([2.95, 4.05]) / 6)
+
+
+@pytest.mark.parametrize("reverse", [False, True])
+def test_default_labels_cover_multi_digit_indices(reverse):
+    figure = plot_critical_difference(np.arange(1, 12), 1, reverse=reverse)
+
+    assert "$x_{10}$" in {text.get_text() for text in figure.axes[0].texts}
+
+
+@pytest.mark.parametrize(
+    ("ranks", "critical_difference", "kwargs", "message"),
+    [
+        ([1], 1, {}, "`ranks` must be one-dimensional with at least two values."),
+        ([1, 2], -1, {}, "`critical_difference` must be non-negative, but got -1."),
+        ([1, 2], 1, {"width": 4}, "`width` must exceed twice `text_spacing`, but got 4."),
+        ([1, 2], 1, {"labels": ["A"]}, "`labels` must have 2 entries, but got 1."),
+    ],
+)
+def test_plot_critical_difference_invalid_argument_messages(ranks, critical_difference, kwargs, message):
+    with pytest.raises(ValueError) as error:
+        plot_critical_difference(ranks, critical_difference, **kwargs)
+
+    assert str(error.value) == message
