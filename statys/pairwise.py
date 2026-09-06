@@ -10,13 +10,23 @@ define a rejection decision and raises ``ValueError`` identifying the pair.
 Use an explicit SciPy ``nan_policy`` when handling missing observations.
 """
 
+from __future__ import annotations
+
+from collections.abc import Callable
 from itertools import combinations
 from math import isfinite
+from typing import Any
 
+from numpy.typing import ArrayLike
 from scipy import stats
 
 
-def _compare(test, samples, alpha, **kwargs) -> dict[str, tuple[int, float]]:
+def _compare(
+    test: Callable[..., Any],
+    samples: tuple[ArrayLike, ...],
+    alpha: float,
+    **kwargs: Any,
+) -> dict[str, tuple[int, float]]:
     if len(samples) < 2:
         raise ValueError("at least two samples are required")
     if not 0 < alpha < 1:
@@ -28,28 +38,150 @@ def _compare(test, samples, alpha, **kwargs) -> dict[str, tuple[int, float]]:
         p_value = float(test(left, right, **kwargs).pvalue)
         if not isfinite(p_value):
             raise ValueError(f"{key}: test returned a non-finite p-value")
+
         output[key] = (int(p_value < alpha), p_value)
+
     return output
 
 
-def u_test(*samples, alpha: float = 0.05, **kwargs) -> dict[str, tuple[int, float]]:
-    """Perform Mann-Whitney U tests for each pair of independent samples."""
+def u_test(
+    *samples: ArrayLike, alpha: float = 0.05, **kwargs: Any
+) -> dict[str, tuple[int, float]]:
+    """Compare independent samples with the Mann-Whitney U test.
+
+    Parameters
+    ----------
+    *samples
+        At least two array-like samples, which may have different lengths.
+        Each pair must produce one scalar p-value.
+    alpha : float, default=0.05
+        Rejection threshold, strictly between zero and one.
+    **kwargs
+        Passed to ``scipy.stats.mannwhitneyu``, including ``alternative``,
+        ``method``, and ``nan_policy``. Defaults are SciPy's, including a
+        two-sided alternative.
+
+    Returns
+    -------
+    dict of str to tuple of (int, float)
+        Keys ``arg{i}-arg{j}`` for ``i < j`` in input order. Values are
+        ``(reject, p_value)``, where rejection is ``int(p_value < alpha)``.
+        P-values are not adjusted for multiple comparisons.
+
+    Raises
+    ------
+    ValueError
+        If fewer than two samples are supplied, `alpha` is outside its
+        bounds, or a test returns a non-finite p-value. SciPy errors
+        propagate unchanged.
+
+    Notes
+    -----
+    The null hypothesis concerns the distributions, not merely their
+    medians. A one-sided alternative compares the earlier input sample
+    against the later one.
+
+    Examples
+    --------
+    >>> from statys import pairwise
+    >>> result = pairwise.u_test([1, 2], [3, 4], method="exact")
+    >>> reject, p_value = result["arg0-arg1"]
+    >>> reject, round(p_value, 3)
+    (0, 0.333)
+    """
 
     return _compare(stats.mannwhitneyu, samples, alpha, **kwargs)
 
 
 def signed_rank(
-    *samples, alpha: float = 0.05, **kwargs
+    *samples: ArrayLike, alpha: float = 0.05, **kwargs: Any
 ) -> dict[str, tuple[int, float]]:
-    """Perform Wilcoxon signed-rank tests on aligned, paired observations."""
+    """Compare paired samples with the Wilcoxon signed-rank test.
+
+    Parameters
+    ----------
+    *samples
+        At least two array-like samples of aligned, paired observations.
+        Each pair must produce one scalar p-value.
+    alpha : float, default=0.05
+        Rejection threshold, strictly between zero and one.
+    **kwargs
+        Passed to ``scipy.stats.wilcoxon``, including ``zero_method``,
+        ``alternative``, ``method``, and ``nan_policy``.
+
+    Returns
+    -------
+    dict of str to tuple of (int, float)
+        Keys ``arg{i}-arg{j}`` for ``i < j`` in input order, mapped to
+        ``(int(p_value < alpha), p_value)``. P-values are unadjusted.
+
+    Raises
+    ------
+    ValueError
+        If fewer than two samples are supplied, `alpha` is outside its
+        bounds, or a test returns a non-finite p-value. SciPy errors
+        propagate unchanged.
+
+    Notes
+    -----
+    SciPy tests whether paired differences are symmetric about zero.
+    Differences are computed as the earlier sample minus the later one;
+    this order matters for one-sided alternatives.
+
+    Examples
+    --------
+    >>> from statys import pairwise
+    >>> pairwise.signed_rank([1, 2, 3, 4], [5, 7, 9, 11], method="exact")
+    {'arg0-arg1': (0, 0.125)}
+    """
 
     return _compare(stats.wilcoxon, samples, alpha, **kwargs)
 
 
-def rank_sum(*samples, alpha: float = 0.05, **kwargs) -> dict[str, tuple[int, float]]:
-    """Perform Wilcoxon rank-sum tests for each pair of independent samples.
+def rank_sum(
+    *samples: ArrayLike, alpha: float = 0.05, **kwargs: Any
+) -> dict[str, tuple[int, float]]:
+    """Compare independent samples with the Wilcoxon rank-sum test.
 
-    SciPy's rank-sum test does not correct for ties; use ``u_test`` for tied data.
+    Parameters
+    ----------
+    *samples
+        At least two array-like samples, which may have different lengths.
+        Each pair must produce one scalar p-value.
+    alpha : float, default=0.05
+        Rejection threshold, strictly between zero and one.
+    **kwargs
+        Passed to ``scipy.stats.ranksums``, including ``alternative`` and
+        ``nan_policy``. The default alternative is two-sided.
+
+    Returns
+    -------
+    dict of str to tuple of (int, float)
+        Keys ``arg{i}-arg{j}`` for ``i < j`` in input order, mapped to
+        ``(int(p_value < alpha), p_value)``. P-values are unadjusted.
+
+    Raises
+    ------
+    ValueError
+        If fewer than two samples are supplied, `alpha` is outside its
+        bounds, or a test returns a non-finite p-value. SciPy errors
+        propagate unchanged.
+
+    See Also
+    --------
+    u_test : Independent-sample comparison with tie correction available.
+
+    Notes
+    -----
+    SciPy's rank-sum test assumes continuous distributions and does not
+    correct for ties. One-sided alternatives follow the input order.
+
+    Examples
+    --------
+    >>> from statys import pairwise
+    >>> result = pairwise.rank_sum([1, 4], [2, 3])
+    >>> result["arg0-arg1"]
+    (0, 1.0)
     """
 
     return _compare(stats.ranksums, samples, alpha, **kwargs)

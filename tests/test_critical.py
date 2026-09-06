@@ -59,3 +59,10 @@ def test_diagram_keeps_overlapping_non_significant_groups(reverse):
     assert len(groups) == 2
     np.testing.assert_allclose(groups[0].get_xdata(), np.array([1.95, 3.05]) / 6)
     np.testing.assert_allclose(groups[1].get_xdata(), np.array([2.95, 4.05]) / 6)
+
+
+@pytest.mark.parametrize("reverse", [False, True])
+def test_default_labels_cover_multi_digit_indices(reverse):
+    figure = plot_critical_difference(np.arange(1, 12), 1, reverse=reverse)
+
+    assert "$x_{10}$" in {text.get_text() for text in figure.axes[0].texts}

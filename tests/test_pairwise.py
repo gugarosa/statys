@@ -65,3 +65,15 @@ def test_signed_rank_exact_p_value():
     results = pairwise.signed_rank([1, 2, 3, 4], [5, 7, 9, 11], method="exact")
 
     assert results["arg0-arg1"] == (0, 2 / 16)
+
+
+@pytest.mark.parametrize(("alternative", "expected"), [("less", 1 / 6), ("greater", 1)])
+def test_one_sided_alternatives_follow_input_order(alternative, expected):
+    result = pairwise.u_test([1, 2], [3, 4], method="exact", alternative=alternative)
+
+    assert result["arg0-arg1"][1] == pytest.approx(expected)
+
+
+def test_scipy_keyword_errors_propagate():
+    with pytest.raises(TypeError, match="unexpected keyword argument"):
+        pairwise.u_test([1, 2], [3, 4], unexpected_option=True)

@@ -1,27 +1,72 @@
 """Friedman and Nemenyi comparisons."""
 
+from __future__ import annotations
+
 from math import inf, nan, sqrt
 
 import numpy as np
+from numpy.typing import ArrayLike, NDArray
 from scipy import stats
 
 
-def _matrix(data) -> np.ndarray:
+def _matrix(data: ArrayLike) -> NDArray[np.float64]:
     values = np.asarray(data, dtype=float)
     if values.ndim != 2 or min(values.shape) < 2:
         raise ValueError("data must contain at least two blocks and two treatments")
+
     return values
 
 
-def friedman(data) -> tuple[tuple[float, int], tuple[float, tuple[int, int]]]:
+def friedman(
+    data: ArrayLike,
+) -> tuple[tuple[float, int], tuple[float, tuple[int, int]]]:
     """Return Friedman and Iman-Davenport statistics for a score matrix.
 
-    Rows are experimental blocks and columns are treatments or algorithms.
-    The result is ``((chi_square, k - 1), (F, (k - 1, (k - 1) * (n - 1))))``
-    for ``n`` blocks and ``k`` treatments. The Friedman statistic is corrected
-    for ties by SciPy. Identical, non-constant rankings give ``F = inf``.
+    Parameters
+    ----------
+    data : array_like of shape (n_blocks, n_treatments)
+        Scores for at least two experimental blocks and three treatments.
+        Columns must represent the same treatments in every block.
+        Scores are converted to floating point; input arrays are not
+        modified.
+
+    Returns
+    -------
+    friedman_result : tuple of (float, int)
+        SciPy's tie-corrected chi-square statistic, followed by
+        ``n_treatments - 1`` degrees of freedom.
+    iman_result : tuple of (float, tuple of (int, int))
+        Iman-Davenport F statistic and its numerator/denominator degrees
+        of freedom: ``(k - 1, (k - 1) * (n - 1))`` for ``n`` blocks and
+        ``k`` treatments. No p-values or rejection decisions are returned.
+
+    Raises
+    ------
+    ValueError
+        If `data` is not a two-dimensional numeric matrix with at least
+        two blocks and three treatments.
+
+    See Also
+    --------
+    nemenyi : Compute average ranks and a post-hoc critical difference.
+
+    Notes
+    -----
+    Identical, non-constant block rankings give an infinite F statistic.
     NaN inputs or ties across every treatment in every block give undefined
-    (NaN) statistics, following SciPy.
+    (NaN) statistics, following SciPy. The chi-square approximation used
+    to interpret a Friedman statistic can be unreliable for small samples;
+    returning a statistic does not establish statistical significance.
+
+    Examples
+    --------
+    >>> from statys import friedman
+    >>> data = [[1, 2, 3], [2, 1, 3], [1, 3, 2], [2, 3, 1]]
+    >>> chi_square, iman = friedman(data)
+    >>> chi_square
+    (1.5, 2)
+    >>> round(iman[0], 6), iman[1]
+    (0.692308, (2, 6))
     """
 
     values = _matrix(data)
@@ -30,16 +75,19 @@ def friedman(data) -> tuple[tuple[float, int], tuple[float, tuple[int, int]]]:
         raise ValueError("Friedman's test requires at least three treatments")
 
     statistic = float(stats.friedmanchisquare(*values.T).statistic)
+
     ranks = stats.rankdata(values, axis=1)
     mean_ranks = ranks.mean(axis=0)
     between = n_blocks * np.sum((mean_ranks - (n_treatments + 1) / 2) ** 2)
     within = np.sum((ranks - mean_ranks) ** 2)
+
     # Q = n * (k - 1) * between / (between + within).
     # This equivalent F avoids subtracting Q from its bound near perfect agreement.
     if within == 0:
         iman = inf if between > 0 else nan
     else:
         iman = (n_blocks - 1) * between / within
+
     degrees = n_treatments - 1
 
     return (statistic, degrees), (
@@ -48,12 +96,53 @@ def friedman(data) -> tuple[tuple[float, int], tuple[float, tuple[int, int]]]:
     )
 
 
-def nemenyi(data, alpha: float = 0.05) -> tuple[np.ndarray, float]:
+def nemenyi(data: ArrayLike, alpha: float = 0.05) -> tuple[NDArray[np.float64], float]:
     """Return average ranks and the Nemenyi critical difference.
 
-    Rows are blocks and columns are treatments. Smaller values receive lower
-    ranks, with average ranks for ties. Negate scores if larger values should
-    receive lower ranks. ``alpha`` must lie strictly between zero and one.
+    Parameters
+    ----------
+    data : array_like of shape (n_blocks, n_treatments)
+        Scores for at least two blocks and two treatments. Columns must
+        identify the same treatments in every block. Smaller scores get
+        lower ranks; negate scores when larger values should rank first.
+        Input arrays are not modified.
+    alpha : float, default=0.05
+        Significance level, strictly between zero and one.
+
+    Returns
+    -------
+    ranks : ndarray of float64, shape (n_treatments,)
+        Average within-block ranks, in the original column order.
+        Ties receive their average rank.
+    critical_difference : float
+        Nemenyi threshold based on the studentized-range distribution.
+        Rank differences exceeding this threshold are significant.
+
+    Raises
+    ------
+    ValueError
+        If `data` is not a numeric matrix with at least two blocks and
+        two treatments, or `alpha` is outside its bounds.
+
+    See Also
+    --------
+    friedman : Compute the omnibus test statistics.
+    statys.plot_critical_difference : Display ranks and their threshold.
+
+    Notes
+    -----
+    This function does not run an omnibus test or decide whether post-hoc
+    analysis is warranted. NaN scores propagate into the average ranks.
+
+    Examples
+    --------
+    >>> from statys import nemenyi
+    >>> data = [[1, 2, 3], [2, 1, 3], [1, 3, 2], [2, 3, 1]]
+    >>> ranks, critical_difference = nemenyi(data)
+    >>> ranks.tolist()
+    [1.5, 2.25, 2.25]
+    >>> round(critical_difference, 6)
+    1.657247
     """
 
     if not 0 < alpha < 1:
@@ -61,7 +150,9 @@ def nemenyi(data, alpha: float = 0.05) -> tuple[np.ndarray, float]:
 
     values = _matrix(data)
     n_blocks, n_treatments = values.shape
+
     ranks = stats.rankdata(values, axis=1).mean(axis=0)
+
     q = stats.studentized_range.ppf(1 - alpha, n_treatments, inf) / sqrt(2)
     critical_difference = q * sqrt(n_treatments * (n_treatments + 1) / (6 * n_blocks))
 

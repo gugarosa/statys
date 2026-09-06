@@ -1,5 +1,8 @@
+from types import MappingProxyType
+
 import numpy as np
 import pytest
+from matplotlib import colormaps, pyplot
 from matplotlib.figure import Figure
 
 from statys import significance
@@ -68,3 +71,40 @@ def test_missing_comparisons_remain_blank(plotter, color):
 def test_invalid_pairwise_keys(plotter, key):
     with pytest.raises(ValueError, match="invalid pairwise result key"):
         plotter({key: (1, 0.01)})
+
+
+@pytest.mark.parametrize(
+    "plotter", [significance.plot_p_value, significance.plot_h_index]
+)
+def test_plots_accept_read_only_mappings_without_global_state(
+    plotter, tmp_path, monkeypatch
+):
+    results = MappingProxyType(RESULTS)
+    original = dict(results)
+    figures = pyplot.get_fignums()
+    color_map = colormaps["Blues"]
+    monkeypatch.chdir(tmp_path)
+
+    figure = plotter(results, color_map=color_map, labels=("A", "B", "C"))
+
+    assert figure.axes[0].images[0].get_cmap() is color_map
+    assert dict(results) == original
+    assert pyplot.get_fignums() == figures
+    assert not list(tmp_path.iterdir())
+
+
+@pytest.mark.parametrize(
+    ("plotter", "color"),
+    [(significance.plot_p_value, 0.8), (significance.plot_h_index, 0)],
+)
+def test_multi_digit_indices_determine_labels_and_matrix_size(plotter, color):
+    figure = plotter({"arg0-arg10": (0, 0.2)})
+    axis = figure.axes[0]
+    matrix = axis.images[0].get_array()
+
+    assert matrix.shape == (11, 11)
+    assert axis.get_xticklabels()[10].get_text() == "$arg_{10}$"
+    assert axis.get_yticklabels()[10].get_text() == "$arg_{10}$"
+    assert matrix[0, 10] == pytest.approx(color)
+    assert matrix[10, 0] == pytest.approx(color)
+    assert np.ma.is_masked(matrix[0, 1])

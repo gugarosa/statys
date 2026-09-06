@@ -1,18 +1,26 @@
-"""Critical-difference diagrams."""
+"""Critical-difference diagrams.
+
+The diagram layout is adapted from the Orange project's plotting code:
+https://github.com/biolab/orange3.
+"""
+
+from __future__ import annotations
 
 from collections.abc import Sequence
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 from matplotlib.figure import Figure
+from numpy.typing import ArrayLike, NDArray
 
 
 def _maximal_intervals(
-    ranks: np.ndarray, critical_difference: float
+    ranks: NDArray[np.float64], critical_difference: float
 ) -> list[tuple[int, int]]:
     """Find maximal non-significant groups in ascending or descending ranks."""
 
-    intervals = []
+    intervals: list[tuple[int, int]] = []
     right = 0
     for left in range(len(ranks) - 1):
         right = max(left, right)
@@ -21,14 +29,16 @@ def _maximal_intervals(
             and abs(ranks[left] - ranks[right + 1]) <= critical_difference
         ):
             right += 1
+
         # A window ending no farther right is contained in the previous one.
         if right > left and (not intervals or right > intervals[-1][1]):
             intervals.append((left, right))
+
     return intervals
 
 
 def plot_critical_difference(
-    ranks: Sequence[float],
+    ranks: ArrayLike,
     critical_difference: float,
     labels: Sequence[str] | None = None,
     width: float = 6,
@@ -36,7 +46,57 @@ def plot_critical_difference(
     reverse: bool = False,
     output: str | Path | None = None,
 ) -> Figure:
-    """Create a critical-difference diagram and optionally save it."""
+    """Create a critical-difference diagram and optionally save it.
+
+    Parameters
+    ----------
+    ranks : array_like of shape (n_treatments,)
+        Average ranks for at least two treatments, normally returned by
+        ``statys.nemenyi``. Input order need not be sorted and is not
+        modified.
+    critical_difference : float
+        Non-negative threshold for differences between average ranks.
+    labels : sequence of str, optional
+        One label per rank, in the same input order. Default labels are
+        ``x_0``, ``x_1``, etc.
+    width : float, default=6
+        Figure width in inches; must exceed twice `text_spacing`.
+    text_spacing : float, default=2
+        Horizontal space in inches reserved for labels on each side.
+    reverse : bool, default=False
+        Display ranks in decreasing order from left to right. This
+        changes the display, not which score direction receives rank one.
+    output : str or pathlib.Path, optional
+        Save destination, with format inferred by Matplotlib from the
+        extension. No file is written when omitted.
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+        A new figure owned by the caller, without opening a GUI window.
+        It can be customized through its axes or saved with ``savefig``.
+        Thick bars connect maximal groups whose rank differences do not
+        exceed the threshold; such groups may overlap.
+
+    Raises
+    ------
+    ValueError
+        If ranks are not one-dimensional with at least two values, the
+        threshold is negative, the width does not exceed twice the label
+        spacing, or the number of labels differs from the rank count.
+        Matplotlib and file-writing errors propagate unchanged.
+
+    See Also
+    --------
+    statys.nemenyi : Compute average ranks and their critical difference.
+
+    Examples
+    --------
+    >>> from statys import plot_critical_difference
+    >>> figure = plot_critical_difference([1, 2, 3], 1, labels=["A", "B", "C"])
+    >>> len(figure.axes)
+    1
+    """
 
     ranks = np.asarray(ranks, dtype=float)
     if ranks.ndim != 1 or len(ranks) < 2:
@@ -60,6 +120,7 @@ def plot_critical_difference(
     count = len(ranks)
     low, high = 1, count
     intervals = _maximal_intervals(ranks, critical_difference)
+
     height_distance = 0.25
     top_distance = 0.65
     blank_lines = 0.4 + max(0, len(intervals) - 1) * 0.1
@@ -68,7 +129,7 @@ def plot_critical_difference(
     scale = width - 2 * text_spacing
 
     figure = Figure(figsize=(width, height))
-    axis = figure.add_axes([0, 0, 1, 1])
+    axis = figure.add_axes((0, 0, 1, 1))
     axis.set_axis_off()
     axis.set_xlim(0, 1)
     axis.set_ylim(1, 0)
@@ -77,11 +138,11 @@ def plot_critical_difference(
         offset = high - rank if reverse else rank - low
         return text_spacing + scale * offset / (high - low)
 
-    def line(points, **kwargs) -> None:
+    def line(points: Sequence[tuple[float, float]], **kwargs: Any) -> None:
         x, y = zip(*points)
         axis.plot(np.asarray(x) / width, np.asarray(y) / height, **kwargs)
 
-    def text(x: float, y: float, value: str, **kwargs) -> None:
+    def text(x: float, y: float, value: str, **kwargs: Any) -> None:
         axis.text(x / width, y / height, value, **kwargs)
 
     line(
@@ -189,4 +250,5 @@ def plot_critical_difference(
 
     if output is not None:
         figure.savefig(output)
+
     return figure

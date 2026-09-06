@@ -107,8 +107,36 @@ p-values.
 uv sync
 uv run pytest
 uv run pre-commit run --all-files
+uv run --extra docs sphinx-build -W --keep-going -b html docs docs/_build/html
 uv build
 ```
+
+`pytest` also executes the examples in public docstrings. CI runs the
+interpreter matrix, existing style hooks, and a warning-as-error documentation
+build before permitting a release.
+
+Public functions use [NumPy-style docstrings](https://numpydoc.readthedocs.io/en/latest/format.html):
+document input shapes, defaults, result structure, expected errors, and a
+small reproducible example. Keep implementation details out of parameter
+descriptions.
+
+The library ships inline type information. Array inputs use
+`numpy.typing.ArrayLike`; rank arrays and fixed result tuples have concrete
+annotations. Measure return values and forwarded keyword arguments remain
+dynamic because NumPy/SciPy determine their type from the input dtype and
+options. Do not narrow these contracts by coercing or copying inputs merely
+to satisfy a type annotation.
+
+Keep stateless operations as functions and share only actual responsibilities
+(such as the pairwise comparison loop). Use NumPy/SciPy for statistical
+primitives and explicit Matplotlib figures for plotting, rather than adding
+estimator classes, factories, or global plotting state without a concrete
+requirement.
+
+Use blank lines to separate logical phases such as validation, calculation,
+and output or rendering. Keep comments that explain decisions or invariants,
+not comments that repeat obvious assignments. Preserve source attribution
+and useful references when simplifying adapted code.
 
 Documentation is available at
 [statys.readthedocs.io](https://statys.readthedocs.io).
