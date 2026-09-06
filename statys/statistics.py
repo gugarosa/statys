@@ -22,51 +22,50 @@ def friedman(
 ) -> tuple[tuple[float, int], tuple[float, tuple[int, int]]]:
     """Return Friedman and Iman-Davenport statistics for a score matrix.
 
-    Parameters
-    ----------
-    data : array_like of shape (n_blocks, n_treatments)
-        Scores for at least two experimental blocks and three treatments.
-        Columns must represent the same treatments in every block.
-        Scores are converted to floating point; input arrays are not
-        modified.
+    Args:
+        data (array_like): Score matrix of shape
+            ``(n_blocks, n_treatments)`` for at least two experimental
+            blocks and three treatments. Columns must represent the same
+            treatments in every block. Scores are converted to floating
+            point; input arrays are not modified.
 
-    Returns
-    -------
-    friedman_result : tuple of (float, int)
-        SciPy's tie-corrected chi-square statistic, followed by
+    Returns:
+        tuple: ``(friedman_result, iman_result)``.
+
+        ``friedman_result`` is a tuple of (float, int): SciPy's
+        tie-corrected chi-square statistic, followed by
         ``n_treatments - 1`` degrees of freedom.
-    iman_result : tuple of (float, tuple of (int, int))
-        Iman-Davenport F statistic and its numerator/denominator degrees
-        of freedom: ``(k - 1, (k - 1) * (n - 1))`` for ``n`` blocks and
-        ``k`` treatments. No p-values or rejection decisions are returned.
 
-    Raises
-    ------
-    ValueError
-        If `data` is not a two-dimensional numeric matrix with at least
-        two blocks and three treatments.
+        ``iman_result`` is a tuple of (float, tuple of (int, int)):
+        the Iman-Davenport F statistic and its numerator/denominator
+        degrees of freedom, ``(k - 1, (k - 1) * (n - 1))``, for ``n``
+        blocks and ``k`` treatments. No p-values or rejection decisions
+        are returned.
 
-    See Also
-    --------
-    nemenyi : Compute average ranks and a post-hoc critical difference.
+    Raises:
+        ValueError: If `data` is not a two-dimensional numeric matrix with
+            at least two blocks and three treatments.
 
-    Notes
-    -----
-    Identical, non-constant block rankings give an infinite F statistic.
-    NaN inputs or ties across every treatment in every block give undefined
-    (NaN) statistics, following SciPy. The chi-square approximation used
-    to interpret a Friedman statistic can be unreliable for small samples;
-    returning a statistic does not establish statistical significance.
+    See Also:
+        :func:`statys.nemenyi`: Compute average ranks and a post-hoc
+        critical difference.
 
-    Examples
-    --------
-    >>> from statys import friedman
-    >>> data = [[1, 2, 3], [2, 1, 3], [1, 3, 2], [2, 3, 1]]
-    >>> chi_square, iman = friedman(data)
-    >>> chi_square
-    (1.5, 2)
-    >>> round(iman[0], 6), iman[1]
-    (0.692308, (2, 6))
+    Notes:
+        Identical, non-constant block rankings give an infinite F statistic.
+        NaN inputs or ties across every treatment in every block give
+        undefined (NaN) statistics, following SciPy. The chi-square
+        approximation used to interpret a Friedman statistic can be
+        unreliable for small samples; returning a statistic does not
+        establish statistical significance.
+
+    Examples:
+        >>> from statys import friedman
+        >>> data = [[1, 2, 3], [2, 1, 3], [1, 3, 2], [2, 3, 1]]
+        >>> chi_square, iman = friedman(data)
+        >>> chi_square
+        (1.5, 2)
+        >>> round(iman[0], 6), iman[1]
+        (0.692308, (2, 6))
     """
 
     values = _matrix(data)
@@ -99,50 +98,49 @@ def friedman(
 def nemenyi(data: ArrayLike, alpha: float = 0.05) -> tuple[NDArray[np.float64], float]:
     """Return average ranks and the Nemenyi critical difference.
 
-    Parameters
-    ----------
-    data : array_like of shape (n_blocks, n_treatments)
-        Scores for at least two blocks and two treatments. Columns must
-        identify the same treatments in every block. Smaller scores get
-        lower ranks; negate scores when larger values should rank first.
-        Input arrays are not modified.
-    alpha : float, default=0.05
-        Significance level, strictly between zero and one.
+    Args:
+        data (array_like): Score matrix of shape
+            ``(n_blocks, n_treatments)`` for at least two blocks and two
+            treatments. Columns must identify the same treatments in
+            every block. Smaller scores get lower ranks; negate scores
+            when larger values should rank first. Input arrays are not
+            modified.
+        alpha (float): Significance level, strictly between zero and one.
+            Defaults to 0.05.
 
-    Returns
-    -------
-    ranks : ndarray of float64, shape (n_treatments,)
-        Average within-block ranks, in the original column order.
-        Ties receive their average rank.
-    critical_difference : float
-        Nemenyi threshold based on the studentized-range distribution.
-        Rank differences exceeding this threshold are significant.
+    Returns:
+        tuple: ``(ranks, critical_difference)``.
 
-    Raises
-    ------
-    ValueError
-        If `data` is not a numeric matrix with at least two blocks and
-        two treatments, or `alpha` is outside its bounds.
+        ``ranks`` is a float64 ndarray of shape ``(n_treatments,)``,
+        containing average within-block ranks in the original column
+        order. Ties receive their average rank.
 
-    See Also
-    --------
-    friedman : Compute the omnibus test statistics.
-    statys.plot_critical_difference : Display ranks and their threshold.
+        ``critical_difference`` is a float threshold based on the
+        studentized-range distribution. Rank differences exceeding this
+        threshold are significant.
 
-    Notes
-    -----
-    This function does not run an omnibus test or decide whether post-hoc
-    analysis is warranted. NaN scores propagate into the average ranks.
+    Raises:
+        ValueError: If `data` is not a numeric matrix with at least two
+            blocks and two treatments, or `alpha` is outside its bounds.
 
-    Examples
-    --------
-    >>> from statys import nemenyi
-    >>> data = [[1, 2, 3], [2, 1, 3], [1, 3, 2], [2, 3, 1]]
-    >>> ranks, critical_difference = nemenyi(data)
-    >>> ranks.tolist()
-    [1.5, 2.25, 2.25]
-    >>> round(critical_difference, 6)
-    1.657247
+    See Also:
+        :func:`statys.friedman`: Compute the omnibus test statistics.
+        :func:`statys.plot_critical_difference`: Display ranks and their
+        threshold.
+
+    Notes:
+        This function does not run an omnibus test or decide whether
+        post-hoc analysis is warranted. NaN scores propagate into the
+        average ranks.
+
+    Examples:
+        >>> from statys import nemenyi
+        >>> data = [[1, 2, 3], [2, 1, 3], [1, 3, 2], [2, 3, 1]]
+        >>> ranks, critical_difference = nemenyi(data)
+        >>> ranks.tolist()
+        [1.5, 2.25, 2.25]
+        >>> round(critical_difference, 6)
+        1.657247
     """
 
     if not 0 < alpha < 1:

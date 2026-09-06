@@ -12,9 +12,10 @@ extensions = [
     "sphinx.ext.napoleon",
 ]
 autosummary_generate = True
+napoleon_numpy_docstring = False
 exclude_patterns = ["_build"]
 html_theme = "alabaster"
 autodoc_default_options = {"members": True}
 autodoc_member_order = "bysource"
-# NumPy-style docstrings describe shapes without expanding ArrayLike unions.
+# Docstrings describe shapes without expanding ArrayLike unions.
 autodoc_typehints = "none"

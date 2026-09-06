@@ -48,54 +48,50 @@ def plot_critical_difference(
 ) -> Figure:
     """Create a critical-difference diagram and optionally save it.
 
-    Parameters
-    ----------
-    ranks : array_like of shape (n_treatments,)
-        Average ranks for at least two treatments, normally returned by
-        ``statys.nemenyi``. Input order need not be sorted and is not
-        modified.
-    critical_difference : float
-        Non-negative threshold for differences between average ranks.
-    labels : sequence of str, optional
-        One label per rank, in the same input order. Default labels are
-        ``x_0``, ``x_1``, etc.
-    width : float, default=6
-        Figure width in inches; must exceed twice `text_spacing`.
-    text_spacing : float, default=2
-        Horizontal space in inches reserved for labels on each side.
-    reverse : bool, default=False
-        Display ranks in decreasing order from left to right. This
-        changes the display, not which score direction receives rank one.
-    output : str or pathlib.Path, optional
-        Save destination, with format inferred by Matplotlib from the
-        extension. No file is written when omitted.
+    Args:
+        ranks (array_like): Average ranks of shape ``(n_treatments,)`` for
+            at least two treatments, normally returned by ``statys.nemenyi``.
+            Input order need not be sorted and is not modified.
+        critical_difference (float): Non-negative threshold for
+            differences between average ranks.
+        labels (sequence of str, optional): One label per rank, in the
+            same input order. Default labels are ``x_0``, ``x_1``, etc.
+        width (float): Figure width in inches; must exceed twice
+            `text_spacing`. Defaults to 6.
+        text_spacing (float): Horizontal space in inches reserved for
+            labels on each side. Defaults to 2.
+        reverse (bool): Display ranks in decreasing order from left to
+            right. This changes the display, not which score direction
+            receives rank one. Defaults to False.
+        output (str or pathlib.Path, optional): Save destination, with
+            format inferred by Matplotlib from the extension. No file
+            is written when omitted.
 
-    Returns
-    -------
-    matplotlib.figure.Figure
-        A new figure owned by the caller, without opening a GUI window.
-        It can be customized through its axes or saved with ``savefig``.
-        Thick bars connect maximal groups whose rank differences do not
-        exceed the threshold; such groups may overlap.
+    Returns:
+        matplotlib.figure.Figure: A new figure owned by the caller,
+        without opening a GUI window. It can be customized through its
+        axes or saved with ``savefig``. Thick bars connect maximal groups
+        whose rank differences do not exceed the threshold; such groups
+        may overlap.
 
-    Raises
-    ------
-    ValueError
-        If ranks are not one-dimensional with at least two values, the
-        threshold is negative, the width does not exceed twice the label
-        spacing, or the number of labels differs from the rank count.
-        Matplotlib and file-writing errors propagate unchanged.
+    Raises:
+        ValueError: If ranks are not one-dimensional with at least two
+            values, the threshold is negative, the width does not exceed
+            twice the label spacing, or the number of labels differs
+            from the rank count. Matplotlib and file-writing errors
+            propagate unchanged.
 
-    See Also
-    --------
-    statys.nemenyi : Compute average ranks and their critical difference.
+    See Also:
+        :func:`statys.nemenyi`: Compute average ranks and their critical
+        difference.
 
-    Examples
-    --------
-    >>> from statys import plot_critical_difference
-    >>> figure = plot_critical_difference([1, 2, 3], 1, labels=["A", "B", "C"])
-    >>> len(figure.axes)
-    1
+    Examples:
+        >>> from statys import plot_critical_difference
+        >>> figure = plot_critical_difference(
+        ...     [1, 2, 3], 1, labels=["A", "B", "C"]
+        ... )
+        >>> len(figure.axes)
+        1
     """
 
     ranks = np.asarray(ranks, dtype=float)

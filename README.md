@@ -115,10 +115,10 @@ uv build
 interpreter matrix, existing style hooks, and a warning-as-error documentation
 build before permitting a release.
 
-Public functions use [NumPy-style docstrings](https://numpydoc.readthedocs.io/en/latest/format.html):
-document input shapes, defaults, result structure, expected errors, and a
-small reproducible example. Keep implementation details out of parameter
-descriptions.
+Public functions use [Google-style docstrings](https://google.github.io/styleguide/pyguide.html#383-functions-and-methods):
+use `Args:`, `Returns:`, `Raises:`, and `Examples:` sections to document input
+shapes, defaults, result structure, expected errors, and a small reproducible
+example. Keep implementation details out of parameter descriptions.
 
 The library ships inline type information. Array inputs use
 `numpy.typing.ArrayLike`; rank arrays and fixed result tuples have concrete
