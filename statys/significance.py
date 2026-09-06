@@ -1,9 +1,13 @@
+# Copyright (c) 2020-2026 Gustavo de Rosa.
+# Licensed under the Apache License, Version 2.0.
+
 """Significance and p-value matrix plots.
 
 Inputs are result dictionaries from ``statys.pairwise``. Both matrix halves
-display the same stored comparison; a one-sided test keeps the direction of
+display the same stored comparison. A one-sided test keeps the direction of
 its original argument order, not the direction of a matrix cell. Missing
 comparisons are left blank.
+
 """
 
 from __future__ import annotations
@@ -18,24 +22,18 @@ from matplotlib.figure import Figure
 from numpy.typing import NDArray
 
 
-def _matrix(
-    results: Mapping[str, tuple[int, float]], value_index: int, diagonal: float
-) -> NDArray[np.float64]:
+def _matrix(results: Mapping[str, tuple[int, float]], value_index: int, diagonal: float) -> NDArray[np.float64]:
     if not results:
-        raise ValueError("at least one pairwise result is required")
+        raise ValueError("`results` must contain at least one pairwise result.")
 
     pairs = []
     for key, result in results.items():
-        match = (
-            re.fullmatch(r"arg([0-9]+)-arg([0-9]+)", key)
-            if isinstance(key, str)
-            else None
-        )
+        match = re.fullmatch(r"arg([0-9]+)-arg([0-9]+)", key) if isinstance(key, str) else None
         if match is None:
-            raise ValueError(f"invalid pairwise result key: {key!r}")
+            raise ValueError(f"`key` must use the arg<i>-arg<j> format, but got {key!r}.")
         left, right = map(int, match.groups())
         if left == right:
-            raise ValueError(f"invalid pairwise result key: {key!r}")
+            raise ValueError(f"`key` must reference distinct samples, but got {key!r}.")
 
         pairs.append((left, right, result[value_index]))
 
@@ -62,7 +60,7 @@ def _plot(
     if labels is None:
         labels = [f"$arg_{{{index}}}$" for index in range(size)]
     elif len(labels) != size:
-        raise ValueError("labels and matrix must have the same length")
+        raise ValueError(f"`labels` must have {size} entries, but got {len(labels)}.")
 
     figure = Figure()
     axis = figure.subplots()
@@ -107,47 +105,38 @@ def plot_p_value(
     """Plot p-values, coloring ``1 - p`` on a fixed zero-to-one scale.
 
     Args:
-        results (mapping of str to tuple of (int, float)): Pairwise results
-            keyed by ``arg{i}-arg{j}``, with distinct, non-negative sample
-            indices. Values are ``(reject, p_value)``; only the p-value is
-            used. Missing comparisons are left blank.
-        color_map (str or matplotlib.colors.Colormap, optional): Matplotlib
-            colormap name or object. Defaults to ``"YlOrRd"``. ``None``
-            uses Matplotlib's configured default.
-        labels (sequence of str, optional): Labels in sample-index order.
-            The required length is one greater than the largest index,
-            including samples with missing pairs. Defaults to ``arg_0``,
-            ``arg_1``, etc.
-        title (str, optional): Axes title.
-        output (str or pathlib.Path, optional): Save destination; no file
-            is written when omitted.
+        results: Pairwise ``arg{i}-arg{j}`` keys mapped to ``(reject, p_value)`` tuples.
+        color_map: Matplotlib colormap name or object, or ``None`` for Matplotlib's configured default.
+        labels: Optional labels in sample-index order, including indices with missing comparisons.
+        title: Optional axes title.
+        output: Optional filename or path for saving the figure.
 
     Returns:
-        matplotlib.figure.Figure: A new, caller-owned figure. Both halves
-        show the same comparison; the diagonal is annotated with p-value
-        one. No GUI is opened.
+        Caller-owned Matplotlib figure showing a symmetric matrix of the stored p-values.
 
     Raises:
-        ValueError: If `results` is empty, a pair key is invalid, or the
-            label count does not match the matrix. Matplotlib and file
-            errors propagate.
+        ValueError: Results are empty, a pair key is invalid, or the label count does not match the matrix.
 
     See Also:
-        :func:`statys.significance.plot_h_index`: Display the rejection
-        decisions instead of p-values.
+        :func:`statys.significance.plot_h_index`: Display the rejection decisions instead of p-values.
 
     Notes:
-        Annotations show the original p-values. Lower p-values receive
-        stronger colors with the default colormap, consistently across
-        separate plots. For a one-sided test, both cells retain the
-        original comparison's direction; a mirrored cell is not an
-        opposite-direction test.
+        Sample indices must be distinct and non-negative. Only the p-value is used, and missing comparisons
+        remain blank. The label count must be one greater than the largest index. Omitted labels use
+        ``arg_0``, ``arg_1``, and subsequent indices.
+
+        Annotations show p-values, including one on the diagonal. Colors use ``1 - p`` on a fixed scale.
+        Lower p-values receive stronger colors with ``YlOrRd``, consistently across separate plots.
+        Both halves retain the original comparison's direction, not an opposite-direction test.
+
+        No GUI is opened and no file is written unless output is supplied. Matplotlib and file errors propagate.
 
     Examples:
         >>> from statys import significance
         >>> figure = significance.plot_p_value({"arg0-arg1": (0, 0.2)})
         >>> figure.axes[0].images[0].get_clim()
         (0.0, 1.0)
+
     """
 
     matrix = _matrix(results, value_index=1, diagonal=1)
@@ -172,43 +161,36 @@ def plot_h_index(
     """Plot pairwise null-hypothesis rejection indicators.
 
     Args:
-        results (mapping of str to tuple of (int, float)): Pairwise results
-            keyed by ``arg{i}-arg{j}``, with distinct, non-negative sample
-            indices. The first tuple element is the rejection indicator:
-            zero or one. Missing pairs are left blank.
-        color_map (str or matplotlib.colors.Colormap, optional): Matplotlib
-            colormap name or object. Defaults to ``"YlOrRd"``. ``None``
-            uses Matplotlib's configured default.
-        labels (sequence of str, optional): Labels in sample-index order,
-            including indices with missing pairs. Defaults to ``arg_0``,
-            ``arg_1``, etc.
-        title (str, optional): Axes title.
-        output (str or pathlib.Path, optional): Save destination; no file
-            is written when omitted.
+        results: Pairwise ``arg{i}-arg{j}`` keys mapped to ``(reject, p_value)`` tuples.
+        color_map: Matplotlib colormap name or object, or ``None`` for Matplotlib's configured default.
+        labels: Optional labels in sample-index order, including indices with missing comparisons.
+        title: Optional axes title.
+        output: Optional filename or path for saving the figure.
 
     Returns:
-        matplotlib.figure.Figure: A new, caller-owned figure with a zero
-        diagonal. Both halves show the same comparison; no GUI is opened.
+        Caller-owned Matplotlib figure showing a symmetric rejection-indicator matrix with a zero diagonal.
 
     Raises:
-        ValueError: If `results` is empty, a pair key is invalid, or the
-            label count does not match the matrix. Matplotlib and file
-            errors propagate.
+        ValueError: Results are empty, a pair key is invalid, or the label count does not match the matrix.
 
     See Also:
-        :func:`statys.significance.plot_p_value`: Display p-values and the
-        shared matrix conventions.
+        :func:`statys.significance.plot_p_value`: Display p-values and the shared matrix conventions.
 
     Notes:
-        Indicators are plotted as supplied, not recomputed from p-values.
-        For a one-sided test, a mirrored cell retains the original
-        direction.
+        Sample indices must be distinct and non-negative. The first tuple element is the zero-or-one
+        rejection indicator, plotted as supplied rather than recomputed from p-values. Missing pairs remain blank.
+        Omitted labels use ``arg_0``, ``arg_1``, and subsequent indices, including those with missing pairs.
+        The label count must be one greater than the largest index.
+
+        Both halves retain the original comparison's direction. No GUI is opened, and no file is written
+        unless output is supplied. Matplotlib and file errors propagate.
 
     Examples:
         >>> from statys import significance
         >>> figure = significance.plot_h_index({"arg0-arg1": (1, 0.01)})
         >>> figure.axes[0].images[0].get_array().tolist()
         [[0.0, 1.0], [1.0, 0.0]]
+
     """
 
     matrix = _matrix(results, value_index=0, diagonal=0)

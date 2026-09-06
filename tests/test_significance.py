@@ -1,3 +1,6 @@
+# Copyright (c) 2020-2026 Gustavo de Rosa.
+# Licensed under the Apache License, Version 2.0.
+
 from types import MappingProxyType
 
 import numpy as np
@@ -61,24 +64,21 @@ def test_missing_comparisons_remain_blank(plotter, color):
     )
 
 
-@pytest.mark.parametrize(
-    "plotter", [significance.plot_p_value, significance.plot_h_index]
-)
+@pytest.mark.parametrize("plotter", [significance.plot_p_value, significance.plot_h_index])
 @pytest.mark.parametrize(
     "key",
     [None, 1, "0-1", "arg0-arg-1", "arg0-arg0", "arg0-arg1-arg2", "argx-arg1"],
 )
 def test_invalid_pairwise_keys(plotter, key):
-    with pytest.raises(ValueError, match="invalid pairwise result key"):
+    with pytest.raises(ValueError) as error:
         plotter({key: (1, 0.01)})
 
+    reason = "must reference distinct samples" if key == "arg0-arg0" else "must use the arg<i>-arg<j> format"
+    assert str(error.value) == f"`key` {reason}, but got {key!r}."
 
-@pytest.mark.parametrize(
-    "plotter", [significance.plot_p_value, significance.plot_h_index]
-)
-def test_plots_accept_read_only_mappings_without_global_state(
-    plotter, tmp_path, monkeypatch
-):
+
+@pytest.mark.parametrize("plotter", [significance.plot_p_value, significance.plot_h_index])
+def test_plots_accept_read_only_mappings_without_global_state(plotter, tmp_path, monkeypatch):
     results = MappingProxyType(RESULTS)
     original = dict(results)
     figures = pyplot.get_fignums()
@@ -108,3 +108,12 @@ def test_multi_digit_indices_determine_labels_and_matrix_size(plotter, color):
     assert matrix[0, 10] == pytest.approx(color)
     assert matrix[10, 0] == pytest.approx(color)
     assert np.ma.is_masked(matrix[0, 1])
+
+
+@pytest.mark.parametrize("plotter", [significance.plot_p_value, significance.plot_h_index])
+def test_significance_invalid_argument_messages(plotter):
+    with pytest.raises(ValueError, match=r"^`results` must contain at least one pairwise result\.$"):
+        plotter({})
+
+    with pytest.raises(ValueError, match=r"^`labels` must have 3 entries, but got 2\.$"):
+        plotter(RESULTS, labels=["A", "B"])

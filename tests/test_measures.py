@@ -1,3 +1,6 @@
+# Copyright (c) 2020-2026 Gustavo de Rosa.
+# Licensed under the Apache License, Version 2.0.
+
 import numpy as np
 import pytest
 
@@ -31,7 +34,7 @@ def test_rank_and_multiple_samples():
 
 
 def test_measure_requires_a_sample():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r"^`samples` must contain at least one sample\.$"):
         measures.mean()
 
 

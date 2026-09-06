@@ -1,3 +1,6 @@
+# Copyright (c) 2020-2026 Gustavo de Rosa.
+# Licensed under the Apache License, Version 2.0.
+
 import numpy as np
 import pytest
 
@@ -18,13 +21,11 @@ def test_pairwise_comparisons(test):
     output = test(*SAMPLES)
 
     assert list(output) == ["arg0-arg1", "arg0-arg2", "arg1-arg2"]
-    assert all(
-        reject in (0, 1) and 0 <= p_value <= 1 for reject, p_value in output.values()
-    )
+    assert all(reject in (0, 1) and 0 <= p_value <= 1 for reject, p_value in output.values())
 
 
 def test_pairwise_requires_two_samples():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r"^`samples` must contain at least two samples\.$"):
         pairwise.u_test(SAMPLES[0])
 
 
@@ -33,7 +34,7 @@ def test_pairwise_requires_two_samples():
     [pairwise.u_test, pairwise.signed_rank, pairwise.rank_sum],
 )
 def test_pairwise_undefined_p_value(test):
-    with pytest.raises(ValueError, match="arg0-arg1.*non-finite p-value"):
+    with pytest.raises(ValueError, match=r"^`arg0-arg1` must produce a finite p-value, but got nan\.$"):
         test([1, np.nan, 3], [4, 5, 6])
 
 
@@ -48,14 +49,14 @@ def test_pairwise_explicit_nan_policy(test):
 
 
 def test_pairwise_error_identifies_the_failed_pair():
-    with pytest.raises(ValueError, match="arg0-arg2.*non-finite p-value"):
+    with pytest.raises(ValueError, match=r"^`arg0-arg2` must produce a finite p-value, but got nan\.$"):
         pairwise.u_test([1, 2, 3], [4, 5, 6], [7, np.nan, 9])
 
 
 def test_u_test_exact_p_value_and_rejection_threshold():
     results = pairwise.u_test([1, 2], [3, 4], method="exact", alpha=1 / 3)
 
-    # Two of the six equally likely allocations are as extreme as this split.
+    # Two of the six equally likely allocations are as extreme as this split
     reject, p_value = results["arg0-arg1"]
     assert p_value == pytest.approx(1 / 3)
     assert reject == 0
@@ -77,3 +78,8 @@ def test_one_sided_alternatives_follow_input_order(alternative, expected):
 def test_scipy_keyword_errors_propagate():
     with pytest.raises(TypeError, match="unexpected keyword argument"):
         pairwise.u_test([1, 2], [3, 4], unexpected_option=True)
+
+
+def test_u_test_invalid_alpha_message():
+    with pytest.raises(ValueError, match=r"^`alpha` must be between 0 and 1, but got 1\.$"):
+        pairwise.u_test(SAMPLES[0], SAMPLES[1], alpha=1)

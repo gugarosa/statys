@@ -1,7 +1,11 @@
+# Copyright (c) 2020-2026 Gustavo de Rosa.
+# Licensed under the Apache License, Version 2.0.
+
 """Critical-difference diagrams.
 
 The diagram layout is adapted from the Orange project's plotting code:
 https://github.com/biolab/orange3.
+
 """
 
 from __future__ import annotations
@@ -15,22 +19,17 @@ from matplotlib.figure import Figure
 from numpy.typing import ArrayLike, NDArray
 
 
-def _maximal_intervals(
-    ranks: NDArray[np.float64], critical_difference: float
-) -> list[tuple[int, int]]:
-    """Find maximal non-significant groups in ascending or descending ranks."""
-
+def _maximal_intervals(ranks: NDArray[np.float64], critical_difference: float) -> list[tuple[int, int]]:
     intervals: list[tuple[int, int]] = []
     right = 0
+
+    # Sorted ranks let both window bounds advance without rescanning pairs
     for left in range(len(ranks) - 1):
         right = max(left, right)
-        while (
-            right + 1 < len(ranks)
-            and abs(ranks[left] - ranks[right + 1]) <= critical_difference
-        ):
+        while right + 1 < len(ranks) and abs(ranks[left] - ranks[right + 1]) <= critical_difference:
             right += 1
 
-        # A window ending no farther right is contained in the previous one.
+        # A window ending no farther right is contained in the previous one
         if right > left and (not intervals or right > intervals[-1][1]):
             intervals.append((left, right))
 
@@ -49,41 +48,31 @@ def plot_critical_difference(
     """Create a critical-difference diagram and optionally save it.
 
     Args:
-        ranks (array_like): Average ranks of shape ``(n_treatments,)`` for
-            at least two treatments, normally returned by ``statys.nemenyi``.
-            Input order need not be sorted and is not modified.
-        critical_difference (float): Non-negative threshold for
-            differences between average ranks.
-        labels (sequence of str, optional): One label per rank, in the
-            same input order. Default labels are ``x_0``, ``x_1``, etc.
-        width (float): Figure width in inches; must exceed twice
-            `text_spacing`. Defaults to 6.
-        text_spacing (float): Horizontal space in inches reserved for
-            labels on each side. Defaults to 2.
-        reverse (bool): Display ranks in decreasing order from left to
-            right. This changes the display, not which score direction
-            receives rank one. Defaults to False.
-        output (str or pathlib.Path, optional): Save destination, with
-            format inferred by Matplotlib from the extension. No file
-            is written when omitted.
+        ranks: Average ranks shaped ``(n_treatments,)`` for at least two treatments, in label order.
+        critical_difference: Non-negative threshold for differences between average ranks.
+        labels: Optional labels corresponding to the input ranks.
+        width: Figure width in inches, greater than twice ``text_spacing``.
+        text_spacing: Horizontal space in inches reserved for labels on each side.
+        reverse: Whether to display ranks in decreasing order from left to right.
+        output: Optional filename or path for saving the figure.
 
     Returns:
-        matplotlib.figure.Figure: A new figure owned by the caller,
-        without opening a GUI window. It can be customized through its
-        axes or saved with ``savefig``. Thick bars connect maximal groups
-        whose rank differences do not exceed the threshold; such groups
-        may overlap.
+        Caller-owned Matplotlib figure that can be customized or saved without opening a GUI.
 
     Raises:
-        ValueError: If ranks are not one-dimensional with at least two
-            values, the threshold is negative, the width does not exceed
-            twice the label spacing, or the number of labels differs
-            from the rank count. Matplotlib and file-writing errors
-            propagate unchanged.
+        ValueError: Wrong rank shape or label count, a negative threshold, or insufficient figure width.
 
     See Also:
-        :func:`statys.nemenyi`: Compute average ranks and their critical
-        difference.
+        :func:`statys.nemenyi`: Compute average ranks and their critical difference.
+
+    Notes:
+        Input ranks need not be sorted and are not modified. Labels follow that input order and use
+        ``x_0``, ``x_1``, and subsequent indices when omitted. Reversing the display does not change which
+        score direction receives rank one.
+
+        Thick bars connect maximal groups whose rank differences do not exceed the threshold, and groups may overlap.
+        The caller can customize the axes or use ``savefig``. A supplied output extension selects the file format.
+        No file is written when output is omitted. Matplotlib and file-writing errors propagate unchanged.
 
     Examples:
         >>> from statys import plot_critical_difference
@@ -92,20 +81,21 @@ def plot_critical_difference(
         ... )
         >>> len(figure.axes)
         1
+
     """
 
     ranks = np.asarray(ranks, dtype=float)
     if ranks.ndim != 1 or len(ranks) < 2:
-        raise ValueError("ranks must contain at least two values")
+        raise ValueError("`ranks` must be one-dimensional with at least two values.")
     if critical_difference < 0:
-        raise ValueError("critical_difference must be non-negative")
+        raise ValueError(f"`critical_difference` must be non-negative, but got {critical_difference}.")
     if width <= 2 * text_spacing:
-        raise ValueError("width must be greater than twice text_spacing")
+        raise ValueError(f"`width` must exceed twice `text_spacing`, but got {width}.")
 
     if labels is None:
         labels = [f"$x_{{{index}}}$" for index in range(len(ranks))]
     elif len(labels) != len(ranks):
-        raise ValueError("labels and ranks must have the same length")
+        raise ValueError(f"`labels` must have {len(ranks)} entries, but got {len(labels)}.")
 
     order = np.argsort(ranks)
     if reverse:
@@ -207,9 +197,7 @@ def plot_critical_difference(
 
     anchor = high if reverse else low
     start = position(anchor)
-    end = position(
-        anchor - critical_difference if reverse else anchor + critical_difference
-    )
+    end = position(anchor - critical_difference if reverse else anchor + critical_difference)
     line(
         [(start, height_distance), (end, height_distance)],
         color="k",
